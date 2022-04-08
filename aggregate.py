@@ -24,7 +24,7 @@ report = c.v2.hosts.aggregate(
 )
 
 # Load data from a test file instead of making API calls
-#with open('output/aggregate20220407-193529.json') as test_file:
+#with open('aggregate-example_response.json') as test_file:
 #	report = json.load(test_file)
 
 # Sort so that the JSON file is organized by the # of the HTTP code:
