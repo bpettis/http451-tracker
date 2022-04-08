@@ -8,21 +8,27 @@ import json, time
 print('Querying Censys for aggregate data on HTTP status codes')
 print('Please wait...')
 
-c = SearchClient()
+# c = SearchClient()
 
 # The aggregate method constructs a report using a query, an aggregation field, and the
 # number of buckets to bin.
-report = c.v2.hosts.aggregate(
-    "service.service_name: HTTP",
-    "services.http.response.status_code",
-    num_buckets=50,
-    virtual_hosts="INCLUDE"
-)
+
+
+#report = c.v2.hosts.aggregate(
+#    "service.service_name: HTTP",
+#    "services.http.response.status_code",
+#    num_buckets=50,
+#    virtual_hosts="INCLUDE"
+#)
+
+with open('output/aggregate20220407-193529.json') as test_file:
+	report = json.load(test_file)
 
 json_report = json.dumps(report)
 
+
 timestr = time.strftime("%Y%m%d-%H%M%S")
-filename = 'output/aggregate' + timestr + '.json'
+filename = 'output/aggregate-' + timestr + '.json'
 
 with open(filename, 'w') as outfile:
 	outfile.write(json_report)
