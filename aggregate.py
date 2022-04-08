@@ -2,7 +2,7 @@
 
 """Aggregate hosts data set."""
 from censys.search import SearchClient
-import json, time
+import json, time, csv
 
 
 print('Querying Censys for aggregate data on HTTP status codes')
@@ -49,3 +49,17 @@ with open(filename, 'w') as outfile:
 	outfile.write(json_report)
 	
 print(f'Done! Wrote data to file {filename}')
+
+all_codes = []
+
+for result in data['buckets']:
+	print(str(result['key']) + " - " + str(result['count']))
+	all_codes.append(result['key'])
+
+with open('output/aggregate.csv', 'w', newline='') as csvfile:
+	csvwriter = csv.writer(csvfile)
+	csvwriter.writerow(all_codes)
+
+# Find only a specific item that matches the filter:
+test = list(filter(lambda item: item['key'] == '451', data['buckets']))
+print(test[0]['count'])
