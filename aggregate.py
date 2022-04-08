@@ -5,6 +5,8 @@ from censys.search import SearchClient
 import json, time, csv
 
 
+all_codes = [101,200,201,202,203,204,301,302,303,307,308,400,401,402,403,404,405,406,407,409,410,412,414,416,418,421,422,423,425,426,429,444,451,452,464,479,500,501,502,503,504,511,520,521,522,523,525,526,530,999]
+
 print('Querying Censys for aggregate data on HTTP status codes')
 print('Please wait...')
 
@@ -27,7 +29,6 @@ with open('output/aggregate20220407-193529.json') as test_file:
 
 # Sort so that the JSON file is organized by the # of the HTTP code:
 sorted_codes = sorted(report['buckets'], key=lambda x: x['key'])
-print(sorted_codes)
 
 # add the query metadata back into the data that we are going to save
 data = {
@@ -42,7 +43,7 @@ data = {
 
 json_report = json.dumps(data)
 
-timestr = time.strftime("%Y%m%d-%H%M%S")
+timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
 filename = 'output/aggregate-' + timestr + '.json'
 
 with open(filename, 'w') as outfile:
@@ -50,16 +51,20 @@ with open(filename, 'w') as outfile:
 	
 print(f'Done! Wrote data to file {filename}')
 
-all_codes = []
+# create a variable to build the row that we are about to add to the CSV  file
+row = []
+row.append(timestr)
 
-for result in data['buckets']:
-	print(str(result['key']) + " - " + str(result['count']))
-	all_codes.append(result['key'])
+for code in all_codes:
+	try:
+		code_count = list(filter(lambda item: item['key'] == str(code), data['buckets']))
+		code_count = code_count[0]['count']
+	except:
+		code_count = ''
+	row.append(code_count)
 
-with open('output/aggregate.csv', 'w', newline='') as csvfile:
-	csvwriter = csv.writer(csvfile)
-	csvwriter.writerow(all_codes)
+with open('output/aggregate.csv', 'a', newline='') as outfile:
+	writer = csv.writer(outfile)
+	writer.writerow(row)
 
-# Find only a specific item that matches the filter:
-test = list(filter(lambda item: item['key'] == '451', data['buckets']))
-print(test[0]['count'])
+print('Added row to CSV file output/aggregate.csv')
