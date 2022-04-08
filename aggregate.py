@@ -29,7 +29,18 @@ with open('output/aggregate20220407-193529.json') as test_file:
 sorted_codes = sorted(report['buckets'], key=lambda x: x['key'])
 print(sorted_codes)
 
-json_report = json.dumps(sorted_codes)
+# add the query metadata back into the data that we are going to save
+data = {
+	'buckets' : sorted_codes,
+	'duration' : report['duration'],
+	'field' : report['field'],
+	'potential_deviation' : report['potential_deviation'],
+	'query' : report['query'],
+	'total' : report['total'],
+	'total_omitted' : report ['total_omitted']
+}
+
+json_report = json.dumps(data)
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
 filename = 'output/aggregate-' + timestr + '.json'
