@@ -21,11 +21,15 @@ print('Please wait...')
 #    virtual_hosts="INCLUDE"
 #)
 
+# Load data from a test file instead of making API calls
 with open('output/aggregate20220407-193529.json') as test_file:
 	report = json.load(test_file)
 
-json_report = json.dumps(report)
+# Sort so that the JSON file is organized by the # of the HTTP code:
+sorted_codes = sorted(report['buckets'], key=lambda x: x['key'])
+print(sorted_codes)
 
+json_report = json.dumps(sorted_codes)
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
 filename = 'output/aggregate-' + timestr + '.json'
