@@ -10,22 +10,22 @@ all_codes = [101,200,201,202,203,204,301,302,303,307,308,400,401,402,403,404,405
 print('Querying Censys for aggregate data on HTTP status codes')
 print('Please wait...')
 
-# c = SearchClient()
+c = SearchClient()
 
 # The aggregate method constructs a report using a query, an aggregation field, and the
 # number of buckets to bin.
 
 
-#report = c.v2.hosts.aggregate(
-#    "service.service_name: HTTP",
-#    "services.http.response.status_code",
-#    num_buckets=50,
-#    virtual_hosts="INCLUDE"
-#)
+report = c.v2.hosts.aggregate(
+    "service.service_name: HTTP",
+    "services.http.response.status_code",
+    num_buckets=50,
+    virtual_hosts="INCLUDE"
+)
 
 # Load data from a test file instead of making API calls
-with open('output/aggregate20220407-193529.json') as test_file:
-	report = json.load(test_file)
+#with open('output/aggregate20220407-193529.json') as test_file:
+#	report = json.load(test_file)
 
 # Sort so that the JSON file is organized by the # of the HTTP code:
 sorted_codes = sorted(report['buckets'], key=lambda x: x['key'])
