@@ -1,7 +1,10 @@
-import json
+import json, time, os
 
 
 filename = 'output/bulk-most-recent-results.json'
+timestr = time.strftime("%Y-%m-%d_%H-%M")
+
+print(f'Now parsing {filename}')
 
 with open(filename) as input_file:
 	bulk_data = json.load(input_file)
@@ -25,8 +28,15 @@ for host in bulk_data:
 				print(service['http']['response']['body'])
 				print('\n')
 				
-				response_filename = 'output/responses/' + str(bulk_data[host]['last_updated_at']) + '-' + str(bulk_data[host]['ip']) + '.txt'
-				html_filename = 'output/responses/' + str(bulk_data[host]['last_updated_at']) + '-' + str(bulk_data[host]['ip']) + '.html'
+				#create an output directory to try and organize things
+				path = 'output/responses/' + timestr
+				isExist = os.path.exists(path)
+				if not isExist:
+					os.makedirs(path)
+					print("The new directory is created!")
+				
+				response_filename = 'output/responses/' + timestr + '/'+ str(bulk_data[host]['last_updated_at']) + '-' + str(bulk_data[host]['ip']) + '.txt'
+				html_filename = 'output/responses/' + timestr + '/' + str(bulk_data[host]['last_updated_at']) + '-' + str(bulk_data[host]['ip']) + '.html'
 				with open(response_filename, 'w') as outfile:
 					for item in service['http']['response']['headers']:
 						try:
@@ -48,3 +58,5 @@ for host in bulk_data:
 
 
 	print('*** *** *** *** ***\n')
+
+print('Done!')

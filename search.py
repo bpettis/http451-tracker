@@ -12,6 +12,7 @@ json_result = query.view_all()
 query = json_result
 
 # TO DO: re-work the API call to return all pages:
+# It looks like we're currently limited to only getting 100 results... which is not anywhere near all of them
 # e.g. - 
 # Multiple pages of search results
 # query = h.search("service.service_name: HTTP", per_page=5, pages=2)
