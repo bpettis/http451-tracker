@@ -24,3 +24,10 @@ with open(filename, 'a') as outfile:
 	outfile.write(str(pretty_json))
 	
 print(f'Wrote list to file {filename}')
+	
+# Overwrite the most recent fiile
+with open('output/bulk-most-recent-results.json', 'w') as outfile:
+	outfile.write(str(pretty_json))
+	
+print('Overwrote new version of output/bulk-most-recent-results.json')
+print('Done!')
