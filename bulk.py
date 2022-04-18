@@ -15,7 +15,7 @@ print(hosts)
 bulk_results = h.bulk_view(hosts)
 
 timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
-filename = 'output/bulk-' + timestr + '.json'
+filename = 'output/bulk/bulk-' + timestr + '.json'
 
 pretty_json = json.dumps(bulk_results, indent=4, sort_keys=True)
 

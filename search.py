@@ -27,7 +27,7 @@ query = json_result
 #	query = json.load(test_file)
 
 timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
-filename = 'output/search-' + timestr + '.txt'
+filename = 'output/ip-list/search-' + timestr + '.txt'
 all_results = ""
 for result in query:
 	#print(result)

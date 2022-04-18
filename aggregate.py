@@ -44,7 +44,7 @@ data = {
 json_report = json.dumps(data)
 
 timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
-filename = 'output/aggregate-' + timestr + '.json'
+filename = 'output/aggregate/aggregate-' + timestr + '.json'
 
 with open(filename, 'w') as outfile:
 	outfile.write(json_report)
@@ -63,8 +63,8 @@ for code in all_codes:
 		code_count = ''
 	row.append(code_count)
 
-with open('output/aggregate.csv', 'a', newline='') as outfile:
+with open('output/aggregate/aggregate.csv', 'a', newline='') as outfile:
 	writer = csv.writer(outfile)
 	writer.writerow(row)
 
-print('Added row to CSV file output/aggregate.csv')
+print('Added row to CSV file output/aggregate/aggregate.csv')
