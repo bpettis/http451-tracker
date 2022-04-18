@@ -11,11 +11,16 @@ filename = 'output/search-most-recent-list.txt'
 with open(filename) as f:
     hosts = [line.rstrip('\n') for line in f]
 
-print(hosts)
+ip_count = len(hosts)
+print(f'Now querying censys for bulk data on {ip_count} addresses')
+print('This will likely take a little while...')
+
 bulk_results = h.bulk_view(hosts)
 
+
+
 timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
-filename = 'output/bulk-' + timestr + '.json'
+filename = 'output/bulk/bulk-' + timestr + '.json'
 
 pretty_json = json.dumps(bulk_results, indent=4, sort_keys=True)
 
