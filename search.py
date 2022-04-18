@@ -3,7 +3,7 @@ from censys.search import CensysHosts
 import json, time
 
 print('Starting Censys search...')
-priint('Listing IPs that return HTTP 451 and have a response body larger than 0')
+print('Listing IPs that return HTTP 451 and have a response body larger than 0')
 h = CensysHosts()
 
 # View all results - uncomment this line to make a real API call
@@ -27,13 +27,25 @@ query = json_result
 
 timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
 filename = 'output/search-' + timestr + '.txt'
-
+all_results = ""
 for result in query:
 	#print(result)
 	print(query[result]['ip'])
-	with open(filename, 'a') as outfile:
-		outfile.write(query[result]['ip'])
-		outfile.write('\n')
+	all_results += query[result]['ip']
+	all_results += '\n'
+	
+# Write a file with timestamped name
+with open(filename, 'a') as outfile:
+	outfile.write(all_results)
 	
 print(f'Wrote list to file {filename}')
+
+# Overwrite the "recent" list
+with open('output/search-most-recent-list.txt', 'w') as outfile:
+	outfile.write(all_results)
+	
+
+print('Overwrote new version of search-most-recent-list.txt')
+
+
 print('Done!')
