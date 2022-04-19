@@ -19,15 +19,15 @@ for host in bulk_data:
 			if(service['http']['response']['status_code'] == 451):
 
 				#Print HTTP headers prettier:				
-				for item in service['http']['response']['headers']:
-					try:
-						print(str(item) + ': ' + str(service['http']['response']['headers'][item][0]))
-					except:
-						print('')
-				print('\n')
-				print(service['http']['response']['body'])
-				print('\n')
-				
+#				for item in service['http']['response']['headers']:
+#					try:
+#						print(str(item) + ': ' + str(service['http']['response']['headers'][item][0]))
+#					except:
+#						print('')
+#				print('\n')
+#				print(service['http']['response']['body'])
+#				print('\n')
+#				
 				#create an output directory to try and organize things
 				path = 'output/responses/' + timestr
 				isExist = os.path.exists(path)
