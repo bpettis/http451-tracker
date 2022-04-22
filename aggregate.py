@@ -2,10 +2,95 @@
 
 """Aggregate hosts data set."""
 from censys.search import SearchClient
+from google.cloud import storage
 import json, time, csv
 
 
 all_codes = [101,200,201,202,203,204,301,302,303,307,308,400,401,402,403,404,405,406,407,409,410,412,414,416,418,421,422,423,425,426,429,444,451,452,464,479,500,501,502,503,504,511,520,521,522,523,525,526,530,999]
+
+bucket_name = '451-response-stats'
+
+# upload_blob function to store object in a Google Cloud Storage bucket 
+
+def upload_blob(bucket_name, contents, destination_blob_name):
+    """Uploads a file to the bucket."""
+
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
+
+    # The contents to upload to the file
+    # contents = "these are my contents"
+
+    # The ID of your GCS object
+    # destination_blob_name = "storage-object-name"
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_string(contents)
+
+    print(
+        "Success! {} was uploaded to {}.".format(
+            destination_blob_name, bucket_name
+        )
+    )
+
+# upload_file function to upload a file, instead of just a string to a Google Cloud Storage bucket
+def upload_file(bucket_name, source_file_name, destination_blob_name):
+    """Uploads a file to the bucket."""
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
+    # The path to your file to upload
+    # source_file_name = "local/path/to/file"
+    # The ID of your GCS object
+    # destination_blob_name = "storage-object-name"
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_filename(source_file_name)
+
+    print(
+        "File {} uploaded to {}.".format(
+            source_file_name, destination_blob_name
+        )
+    )
+
+# download_blob function to get an object from the Google Cloud Storage bucket
+# 
+# We need this to get the most recent aggregate.csv file and add the row into it
+
+def download_blob(bucket_name, source_blob_name, destination_file_name):
+    """Downloads a blob from the bucket."""
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
+
+    # The ID of your GCS object
+    # source_blob_name = "storage-object-name"
+
+    # The path to which the file should be downloaded
+    # destination_file_name = "local/path/to/file"
+
+    storage_client = storage.Client()
+
+    bucket = storage_client.bucket(bucket_name)
+
+    # Construct a client side representation of a blob.
+    # Note `Bucket.blob` differs from `Bucket.get_blob` as it doesn't retrieve
+    # any content from Google Cloud Storage. As we don't need additional data,
+    # using `Bucket.blob` is preferred here.
+    blob = bucket.blob(source_blob_name)
+    blob.download_to_filename(destination_file_name)
+
+    print(
+        "Downloaded storage object {} from bucket {} to local file {}.".format(
+            source_blob_name, bucket_name, destination_file_name
+        )
+    )
+
+
 
 print('Querying Censys for aggregate data on HTTP status codes')
 print('Please wait...')
@@ -15,7 +100,6 @@ c = SearchClient()
 # The aggregate method constructs a report using a query, an aggregation field, and the
 # number of buckets to bin.
 
-
 report = c.v2.hosts.aggregate(
     "service.service_name: HTTP",
     "services.http.response.status_code",
@@ -23,9 +107,6 @@ report = c.v2.hosts.aggregate(
     virtual_hosts="INCLUDE"
 )
 
-# Load data from a test file instead of making API calls
-#with open('aggregate-example_response.json') as test_file:
-#	report = json.load(test_file)
 
 # Sort so that the JSON file is organized by the # of the HTTP code:
 sorted_codes = sorted(report['buckets'], key=lambda x: x['key'])
@@ -44,17 +125,14 @@ data = {
 json_report = json.dumps(data)
 
 timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
-filename = 'output/aggregate/aggregate-' + timestr + '.json'
+bucket_filename = 'aggregate/aggregate-' + timestr + '.json'
 
-with open(filename, 'w') as outfile:
-	outfile.write(json_report)
-	
-print(f'Done! Wrote data to file {filename}')
+# Upload the aggregate JSON to the cloud
+upload_blob(bucket_name, json_report, bucket_filename)
 
 # create a variable to build the row that we are about to add to the CSV  file
 row = []
 row.append(timestr)
-
 for code in all_codes:
 	try:
 		code_count = list(filter(lambda item: item['key'] == str(code), data['buckets']))
@@ -63,8 +141,13 @@ for code in all_codes:
 		code_count = ''
 	row.append(code_count)
 
-with open('output/aggregate/aggregate.csv', 'a', newline='') as outfile:
+# Get the aggregate.csv file from the cloud
+download_blob(bucket_name, 'aggregate.csv', 'aggregate-temp.csv')
+
+# Append our newly constructed row:
+with open('aggregate-temp.csv', 'a', newline='') as outfile:
 	writer = csv.writer(outfile)
 	writer.writerow(row)
 
-print('Added row to CSV file output/aggregate/aggregate.csv')
+# Upload the updated aggregate.csv back into the cloud
+upload_file(bucket_name, 'aggregate-temp.csv', 'aggregate.csv')
