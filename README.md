@@ -89,8 +89,8 @@ To run the search:
 This script looks through the most recent `bulk-most-recent-results.json` file and parses _all_ of the returned data and produces individual files with the HTTP respons from each host
 
 These resulting files are saved in output/responses/[TIMESTAMP]/
-- 
-
+- [TIMESTAMP]-[IP ADDRESS].txt - contains the HTTP header and response body
+- [TIMESTAMP]-[IP ADDRESS].html - contains the HTTP response body only -- Note: this will _always_ save the body as an HTML file, even if the body is not HTML. Sorry about it.
 To run the script:
 
 `python3 parse.py`
