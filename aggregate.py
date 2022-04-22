@@ -142,15 +142,15 @@ def aggregate():
 		row.append(code_count)
 	
 	# Get the aggregate.csv file from the cloud
-	download_blob(bucket_name, 'aggregate.csv', 'aggregate-temp.csv')
+	download_blob(bucket_name, 'aggregate.csv', '/tmp/aggregate-temp.csv')
 	
 	# Append our newly constructed row:
-	with open('aggregate-temp.csv', 'a', newline='') as outfile:
+	with open('/tmp/aggregate-temp.csv', 'a', newline='') as outfile:
 		writer = csv.writer(outfile)
 		writer.writerow(row)
 	
 	# Upload the updated aggregate.csv back into the cloud
-	upload_file(bucket_name, 'aggregate-temp.csv', 'aggregate.csv')
+	upload_file(bucket_name, '/tmp/aggregate-temp.csv', 'aggregate.csv')
 	
 	# Do some cleanup and delete our temp file
 	if os.path.exists("aggregate-temp.csv"):
@@ -160,6 +160,11 @@ def aggregate():
 	  
 	print('Done!')
 	return
-
+	
+# We use this wrapper function to handle when the script is started in Google Cloud Functions
+# It needs *somewhere* for those entry variables to go, and so even though this function doesn't do
+# anything with them, it still seems to be necessary.
+def pubsub_entry(event, context):
+	aggregate()
 if __name__ == "__main__":
 	aggregate()
