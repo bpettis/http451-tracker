@@ -1,12 +1,68 @@
 """Search hosts data set."""
 from censys.search import CensysHosts
+from google.cloud import storage
 import json, time
 
+bucket_name = '451-response-stats'
 
 h = CensysHosts()
 
 per_page = 100
 pages = 100
+
+# upload_blob function to store object in a Google Cloud Storage bucket 
+def upload_blob(bucket_name, contents, destination_blob_name):
+    """Uploads a file to the bucket."""
+
+    # The ID of your GCS bucket
+    # bucket_name = "your-bucket-name"
+
+    # The contents to upload to the file
+    # contents = "these are my contents"
+
+    # The ID of your GCS object
+    # destination_blob_name = "storage-object-name"
+
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(destination_blob_name)
+
+    blob.upload_from_string(contents)
+
+    print(
+        "Success! {} was uploaded to {}.".format(
+            destination_blob_name, bucket_name
+        )
+    )
+
+# copy_blob function to create a copy of the timestamped file as search-most-recent-list.txt for future iterations of the script to access
+def copy_blob( bucket_name, blob_name, destination_bucket_name, destination_blob_name ):
+    """Copies a blob from one bucket to another with a new name."""
+    # bucket_name = "your-bucket-name"
+    # blob_name = "your-object-name"
+    # destination_bucket_name = "destination-bucket-name"
+    # destination_blob_name = "destination-object-name"
+
+    storage_client = storage.Client()
+
+    source_bucket = storage_client.bucket(bucket_name)
+    source_blob = source_bucket.blob(blob_name)
+    destination_bucket = storage_client.bucket(destination_bucket_name)
+
+    blob_copy = source_bucket.copy_blob(
+        source_blob, destination_bucket, destination_blob_name
+    )
+
+    print(
+        "Blob {} in bucket {} copied to blob {} in bucket {}.".format(
+            source_blob.name,
+            source_bucket.name,
+            blob_copy.name,
+            destination_bucket.name,
+        )
+    )
+
+
 
 print('Starting Censys search...')
 print('Listing IPs that return HTTP 451 and have a response body larger than 0')
@@ -28,38 +84,20 @@ for page in query:
 query = all_results
 result_count = len(all_results)
 print(f'Finished Searching... now parsing + listing {result_count} addresses')
-# TO DO: re-work the API call to return all pages:
-# It looks like we're currently limited to only getting 100 results... which is not anywhere near all of them
-# e.g. - 
-# Multiple pages of search results
-# query = h.search("service.service_name: HTTP", per_page=5, pages=2)
-# for page in query:
-#     print(page)
-#
-# from: https://censys-python.readthedocs.io/en/stable/usage-v2.html#search
 
-
-# load from an example file instead of making a real API call
-#with open('test-json_result.json') as test_file:
-#	query = json.load(test_file)
 
 timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
-filename = 'output/ip-list/search-' + timestr + '.txt'
+filename = 'ip-list/search-' + timestr + '.txt'
 all_results = ""
 for result in query:
 	all_results += query[result]['ip']
 	all_results += '\n'
 	
-# Write a file with timestamped name
-with open(filename, 'a') as outfile:
-	outfile.write(all_results)
+# Write the file into a Cloud Storage object
+upload_blob(bucket_name, all_results, filename)
 	
-print(f'Wrote list to file {filename}')
-
-# Overwrite the "recent" list
-with open('output/search-most-recent-list.txt', 'w') as outfile:
-	outfile.write(all_results)
-	
+# Copy that timestamped list into a common list that we can access the next time the script runs	
+copy_blob(bucket_name, filename, bucket_name, 'search-most-recent-list.txt')
 
 print('Overwrote new version of search-most-recent-list.txt')
 
