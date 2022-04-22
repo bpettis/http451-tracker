@@ -3,7 +3,7 @@
 """Aggregate hosts data set."""
 from censys.search import SearchClient
 from google.cloud import storage
-import json, time, csv
+import json, time, csv, os
 
 
 all_codes = [101,200,201,202,203,204,301,302,303,307,308,400,401,402,403,404,405,406,407,409,410,412,414,416,418,421,422,423,425,426,429,444,451,452,464,479,500,501,502,503,504,511,520,521,522,523,525,526,530,999]
@@ -151,3 +151,9 @@ with open('aggregate-temp.csv', 'a', newline='') as outfile:
 
 # Upload the updated aggregate.csv back into the cloud
 upload_file(bucket_name, 'aggregate-temp.csv', 'aggregate.csv')
+
+# Do some cleanup and delete our temp file
+if os.path.exists("aggregate-temp.csv"):
+  os.remove("aggregate-temp.csv")
+else:
+  print("The file does not exist")

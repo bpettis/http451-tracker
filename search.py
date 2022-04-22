@@ -1,14 +1,14 @@
 """Search hosts data set."""
 from censys.search import CensysHosts
 from google.cloud import storage
-import json, time
+import json, time, os
 
 bucket_name = '451-response-stats'
 
 h = CensysHosts()
 
 per_page = 100
-pages = 100
+pages = 1
 
 # upload_blob function to store object in a Google Cloud Storage bucket 
 def upload_blob(bucket_name, contents, destination_blob_name):

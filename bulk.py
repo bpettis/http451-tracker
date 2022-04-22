@@ -1,6 +1,6 @@
 from censys.search import CensysHosts
 from google.cloud import storage
-import json, time
+import json, time, os
 
 print('Gathering bulk data for the list of recent IP addresses')
 
@@ -129,4 +129,13 @@ upload_blob(bucket_name, str(pretty_json), filename)
 copy_blob(bucket_name, filename, bucket_name, 'bulk-most-recent-results.json')	
 	
 print('Overwrote new version of output/bulk-most-recent-results.json')
+
+
+# Do some cleanup and delete our temp file
+if os.path.exists('output/search-most-recent-list.txt'):
+  os.remove('output/search-most-recent-list.txt')
+  print('removed temp file')
+else:
+  print("The file does not exist")
+
 print('Done!')
