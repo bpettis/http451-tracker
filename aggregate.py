@@ -91,69 +91,75 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
     )
 
 
+def aggregate():
+	print('Querying Censys for aggregate data on HTTP status codes')
+	print('Please wait...')
+	
+	c = SearchClient()
+	
+	# The aggregate method constructs a report using a query, an aggregation field, and the
+	# number of buckets to bin.
+	
+	report = c.v2.hosts.aggregate(
+	    "service.service_name: HTTP",
+	    "services.http.response.status_code",
+	    num_buckets=50,
+	    virtual_hosts="INCLUDE"
+	)
+	
+	
+	# Sort so that the JSON file is organized by the # of the HTTP code:
+	sorted_codes = sorted(report['buckets'], key=lambda x: x['key'])
+	
+	# add the query metadata back into the data that we are going to save
+	data = {
+		'buckets' : sorted_codes,
+		'duration' : report['duration'],
+		'field' : report['field'],
+		'potential_deviation' : report['potential_deviation'],
+		'query' : report['query'],
+		'total' : report['total'],
+		'total_omitted' : report ['total_omitted']
+	}
+	
+	json_report = json.dumps(data)
+	
+	timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
+	bucket_filename = 'aggregate/aggregate-' + timestr + '.json'
+	
+	# Upload the aggregate JSON to the cloud
+	upload_blob(bucket_name, json_report, bucket_filename)
+	
+	# create a variable to build the row that we are about to add to the CSV  file
+	row = []
+	row.append(timestr)
+	for code in all_codes:
+		try:
+			code_count = list(filter(lambda item: item['key'] == str(code), data['buckets']))
+			code_count = code_count[0]['count']
+		except:
+			code_count = ''
+		row.append(code_count)
+	
+	# Get the aggregate.csv file from the cloud
+	download_blob(bucket_name, 'aggregate.csv', 'aggregate-temp.csv')
+	
+	# Append our newly constructed row:
+	with open('aggregate-temp.csv', 'a', newline='') as outfile:
+		writer = csv.writer(outfile)
+		writer.writerow(row)
+	
+	# Upload the updated aggregate.csv back into the cloud
+	upload_file(bucket_name, 'aggregate-temp.csv', 'aggregate.csv')
+	
+	# Do some cleanup and delete our temp file
+	if os.path.exists("aggregate-temp.csv"):
+	  os.remove("aggregate-temp.csv")
+	else:
+	  print("The file does not exist")
+	  
+	print('Done!')
+	return
 
-print('Querying Censys for aggregate data on HTTP status codes')
-print('Please wait...')
-
-c = SearchClient()
-
-# The aggregate method constructs a report using a query, an aggregation field, and the
-# number of buckets to bin.
-
-report = c.v2.hosts.aggregate(
-    "service.service_name: HTTP",
-    "services.http.response.status_code",
-    num_buckets=50,
-    virtual_hosts="INCLUDE"
-)
-
-
-# Sort so that the JSON file is organized by the # of the HTTP code:
-sorted_codes = sorted(report['buckets'], key=lambda x: x['key'])
-
-# add the query metadata back into the data that we are going to save
-data = {
-	'buckets' : sorted_codes,
-	'duration' : report['duration'],
-	'field' : report['field'],
-	'potential_deviation' : report['potential_deviation'],
-	'query' : report['query'],
-	'total' : report['total'],
-	'total_omitted' : report ['total_omitted']
-}
-
-json_report = json.dumps(data)
-
-timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
-bucket_filename = 'aggregate/aggregate-' + timestr + '.json'
-
-# Upload the aggregate JSON to the cloud
-upload_blob(bucket_name, json_report, bucket_filename)
-
-# create a variable to build the row that we are about to add to the CSV  file
-row = []
-row.append(timestr)
-for code in all_codes:
-	try:
-		code_count = list(filter(lambda item: item['key'] == str(code), data['buckets']))
-		code_count = code_count[0]['count']
-	except:
-		code_count = ''
-	row.append(code_count)
-
-# Get the aggregate.csv file from the cloud
-download_blob(bucket_name, 'aggregate.csv', 'aggregate-temp.csv')
-
-# Append our newly constructed row:
-with open('aggregate-temp.csv', 'a', newline='') as outfile:
-	writer = csv.writer(outfile)
-	writer.writerow(row)
-
-# Upload the updated aggregate.csv back into the cloud
-upload_file(bucket_name, 'aggregate-temp.csv', 'aggregate.csv')
-
-# Do some cleanup and delete our temp file
-if os.path.exists("aggregate-temp.csv"):
-  os.remove("aggregate-temp.csv")
-else:
-  print("The file does not exist")
+if __name__ == "__main__":
+	aggregate()
