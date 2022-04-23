@@ -116,7 +116,7 @@ def parse():
 						try:
 							html.write(str(service['http']['response']['body']))
 						except:
-							print(f'writing HTTP body failed for ' + str(bulk_data[host]['ip'])
+							print(f'writing HTTP body failed for ' + str(bulk_data[host]['ip']))
 					upload_file(bucket_name, html_filename, html_bucket_filename)
 						
 				else:
