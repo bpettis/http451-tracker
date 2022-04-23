@@ -3,3 +3,10 @@ DS_Store
 
 secrets/
 secrets/*
+
+# Exclude locally vendored dependencies.
+vendor/
+
+# Exclude "build-time" ignore files.
+.dockerignore
+.gcloudignore
