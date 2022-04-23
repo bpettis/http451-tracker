@@ -10,8 +10,9 @@ h = CensysHosts()
 filename = '/tmp/search-most-recent-list.txt'
 bucket_name = '451-response-stats'
 
+# Set up pub/sub topic for triggering the next script
 project_id = 'http-451-tracker'
-topic_id = 'search'
+topic_id = 'parse'
 publisher = pubsub_v1.PublisherClient()
 
 topic_path = 'projects/{project_id}/topics/{topic}'.format(

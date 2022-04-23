@@ -14,6 +14,7 @@ all_codes = [101,200,201,202,203,204,301,302,303,307,308,400,401,402,403,404,405
 
 bucket_name = '451-response-stats'
 
+# Set up pub/sub topic for triggering the next script
 project_id = 'http-451-tracker'
 topic_id = 'search'
 publisher = pubsub_v1.PublisherClient()

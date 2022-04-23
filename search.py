@@ -6,8 +6,9 @@ import json, time, os
 
 bucket_name = '451-response-stats'
 
+# Set up pub/sub topic for triggering the next script
 project_id = 'http-451-tracker'
-topic_id = 'search'
+topic_id = 'bulk'
 publisher = pubsub_v1.PublisherClient()
 topic_path = 'projects/{project_id}/topics/{topic}'.format(
     project_id=project_id,
