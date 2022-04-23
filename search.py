@@ -1,14 +1,20 @@
 """Search hosts data set."""
 from censys.search import CensysHosts
 from google.cloud import storage
+from google.cloud import pubsub_v1
 import json, time, os
 
 bucket_name = '451-response-stats'
 
+project_id = 'http-451-tracker'
+topic_id = 'bulk'
+publisher = pubsub_v1.PublisherClient()
+topic_path = publisher.topic_path(project_id, topic_id)
+
 h = CensysHosts()
 
 per_page = 100
-pages = 1
+pages = 100
 
 # upload_blob function to store object in a Google Cloud Storage bucket 
 def upload_blob(bucket_name, contents, destination_blob_name):
@@ -101,7 +107,7 @@ def search():
 	
 	print('Overwrote new version of search-most-recent-list.txt')
 	
-	
+	topic = publisher.create_topic(request={"name": topic_path})
 	print('Done!')
 
 

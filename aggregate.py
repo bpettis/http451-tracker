@@ -3,12 +3,21 @@
 """Aggregate hosts data set."""
 from censys.search import SearchClient
 from google.cloud import storage
+from google.cloud import pubsub_v1
 import json, time, csv, os
+
+
+
 
 
 all_codes = [101,200,201,202,203,204,301,302,303,307,308,400,401,402,403,404,405,406,407,409,410,412,414,416,418,421,422,423,425,426,429,444,451,452,464,479,500,501,502,503,504,511,520,521,522,523,525,526,530,999]
 
 bucket_name = '451-response-stats'
+
+project_id = 'http-451-tracker'
+topic_id = 'aggregate'
+publisher = pubsub_v1.PublisherClient()
+topic_path = publisher.topic_path(project_id, topic_id)
 
 # upload_blob function to store object in a Google Cloud Storage bucket 
 
@@ -157,6 +166,8 @@ def aggregate():
 	  os.remove("aggregate-temp.csv")
 	else:
 	  print("The file does not exist")
+	  
+	topic = publisher.create_topic(request={"name": topic_path})
 	  
 	print('Done!')
 	return

@@ -130,7 +130,7 @@ def parse():
 	
 		print('*** *** *** *** ***\n')
 	
-	print('Done!')
+	print('Done Parsing!')
 
 
 def pubsub_entry(event, context):

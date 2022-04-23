@@ -1,5 +1,6 @@
 from censys.search import CensysHosts
 from google.cloud import storage
+from google.cloud import pubsub_v1
 import json, time, os
 
 print('Gathering bulk data for the list of recent IP addresses')
@@ -8,6 +9,11 @@ h = CensysHosts()
 
 filename = '/tmp/search-most-recent-list.txt'
 bucket_name = '451-response-stats'
+
+project_id = 'http-451-tracker'
+topic_id = 'parse'
+publisher = pubsub_v1.PublisherClient()
+topic_path = publisher.topic_path(project_id, topic_id)
 
 # download_blob function to get an object from the Google Cloud Storage bucket
 # 
@@ -139,6 +145,7 @@ def bulk():
 	else:
 	  print("The file does not exist")
 	
+	topic = publisher.create_topic(request={"name": topic_path})
 	print('Done!')
 
 def pubsub_entry(event, context):
