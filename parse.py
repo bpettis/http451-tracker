@@ -61,71 +61,79 @@ def download_blob(bucket_name, source_blob_name, destination_file_name):
         )
     )
 
-print(f'Now parsing {filename}')
 
-download_blob(bucket_name, 'bulk-most-recent-results.json', filename)
-
-with open(filename) as input_file:
-	bulk_data = json.load(input_file)
-
-for host in bulk_data:
-   
-	print(bulk_data[host]['ip'])
-	#print(bulk_data[host]['last_updated_at'])
+def parse():
+	print(f'Now parsing {filename}')
 	
-    
-	for service in bulk_data[host]['services']:
-		try:
-			if(service['http']['response']['status_code'] == 451):
-
-				#Print HTTP headers prettier:				
-#				for item in service['http']['response']['headers']:
-#					try:
-#						print(str(item) + ': ' + str(service['http']['response']['headers'][item][0]))
-#					except:
-#						print('')
-#				print('\n')
-#				print(service['http']['response']['body'])
-#				print('\n')
-#				
-				#create an output directory to try and organize things
-				path = 'output/responses/' + timestr
-				isExist = os.path.exists(path)
-				if not isExist:
-					os.makedirs(path)
-					print("The new directory is created!")
-				
-				response_filename = 'output/responses/' + timestr + '/'+ str(bulk_data[host]['ip']) + '.txt'
-				response_bucket_filename = 'responses/' + timestr + '/'+ str(bulk_data[host]['ip']) + '.txt'
-				html_filename = 'output/responses/' + timestr + '/' + str(bulk_data[host]['ip']) + '.html'
-				html_bucket_filename = 'responses/' + timestr + '/' + str(bulk_data[host]['ip']) + '.html'
-				with open(response_filename, 'w') as outfile:
-					print('writing HTTP headers')
-					for item in service['http']['response']['headers']:
+	download_blob(bucket_name, 'bulk-most-recent-results.json', filename)
+	
+	with open(filename) as input_file:
+		bulk_data = json.load(input_file)
+	
+	for host in bulk_data:
+	   
+		print(bulk_data[host]['ip'])
+		#print(bulk_data[host]['last_updated_at'])
+		
+	    
+		for service in bulk_data[host]['services']:
+			try:
+				if(service['http']['response']['status_code'] == 451):
+	
+					#Print HTTP headers prettier:				
+	#				for item in service['http']['response']['headers']:
+	#					try:
+	#						print(str(item) + ': ' + str(service['http']['response']['headers'][item][0]))
+	#					except:
+	#						print('')
+	#				print('\n')
+	#				print(service['http']['response']['body'])
+	#				print('\n')
+	#				
+					#create an output directory to try and organize things
+					path = 'output/responses/' + timestr
+					isExist = os.path.exists(path)
+					if not isExist:
+						os.makedirs(path)
+						print("The new directory is created!")
+					
+					response_filename = 'output/responses/' + timestr + '/'+ str(bulk_data[host]['ip']) + '.txt'
+					response_bucket_filename = 'responses/' + timestr + '/'+ str(bulk_data[host]['ip']) + '.txt'
+					html_filename = 'output/responses/' + timestr + '/' + str(bulk_data[host]['ip']) + '.html'
+					html_bucket_filename = 'responses/' + timestr + '/' + str(bulk_data[host]['ip']) + '.html'
+					with open(response_filename, 'w') as outfile:
+						print('writing HTTP headers')
+						for item in service['http']['response']['headers']:
+							try:
+								outfile.write(str(item) + ': ' + str(service['http']['response']['headers'][item][0]) + '\n')
+							except:
+								print('')
+						outfile.write('\n\n')
+						outfile.write(str(service['http']['response']['body']))
+					
+					upload_file(bucket_name, response_filename, response_bucket_filename)
+					with open(html_filename, 'w') as html:
 						try:
-							outfile.write(str(item) + ': ' + str(service['http']['response']['headers'][item][0]) + '\n')
+							html.write(str(service['http']['response']['body']))
+							print('wrote HTTP body')
 						except:
 							print('')
-					outfile.write('\n\n')
-					outfile.write(str(service['http']['response']['body']))
+					upload_file(bucket_name, html_filename, html_bucket_filename)
+						
+				else:
+					print('not 451')
 				
-				upload_file(bucket_name, response_filename, response_bucket_filename)
-				with open(html_filename, 'w') as html:
-					try:
-						html.write(str(service['http']['response']['body']))
-						print('wrote HTTP body')
-					except:
-						print('')
-				upload_file(bucket_name, html_filename, html_bucket_filename)
-					
-			else:
-				print('not 451')
-			
-		except:
-			print('failed - likely not http\n')
-			
+			except:
+				print('failed - likely not http\n')
+				
+	
+	
+		print('*** *** *** *** ***\n')
+	
+	print('Done!')
 
 
-	print('*** *** *** *** ***\n')
-
-print('Done!')
+def pubsub_entry(event, context):
+	parse()
+if __name__ == "__main__":
+	parse()

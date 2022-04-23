@@ -94,48 +94,54 @@ def copy_blob( bucket_name, blob_name, destination_bucket_name, destination_blob
         )
     )
 
-# Get the most recent file from cloud
-download_blob(bucket_name, 'search-most-recent-list.txt', filename)
-
-# Read IP addresses from most recent search into an array
-with open(filename) as f:
-    hosts = [line.rstrip('\n') for line in f]
-
-ip_count = len(hosts)
-print(f'Now querying censys for bulk data on {ip_count} addresses')
-print('This will likely take a little while...')
-
-bulk_results = h.bulk_view(hosts)
-
-
-
-timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
-# filename = 'output/bulk/bulk-' + timestr + '.json'
-filename = 'bulk/bulk-' + timestr + '.json'
-
-pretty_json = json.dumps(bulk_results, indent=4, sort_keys=True)
-
-# Write a file with timestamped name
-#with open(filename, 'a') as outfile:
-#	outfile.write(str(pretty_json))	
-#print(f'Wrote list to file {filename}')
-
-upload_blob(bucket_name, str(pretty_json), filename)
+def bulk():
+	# Get the most recent file from cloud
+	download_blob(bucket_name, 'search-most-recent-list.txt', filename)
 	
-# Overwrite the most recent fiile
-#with open('output/bulk-most-recent-results.json', 'w') as outfile:
-#	outfile.write(str(pretty_json))
+	# Read IP addresses from most recent search into an array
+	with open(filename) as f:
+	    hosts = [line.rstrip('\n') for line in f]
 	
-copy_blob(bucket_name, filename, bucket_name, 'bulk-most-recent-results.json')	
+	ip_count = len(hosts)
+	print(f'Now querying censys for bulk data on {ip_count} addresses')
+	print('This will likely take a little while...')
 	
-print('Overwrote new version of output/bulk-most-recent-results.json')
+	bulk_results = h.bulk_view(hosts)
+	
+	
+	
+	timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
+	# filename = 'output/bulk/bulk-' + timestr + '.json'
+	filename = 'bulk/bulk-' + timestr + '.json'
+	
+	pretty_json = json.dumps(bulk_results, indent=4, sort_keys=True)
+	
+	# Write a file with timestamped name
+	#with open(filename, 'a') as outfile:
+	#	outfile.write(str(pretty_json))	
+	#print(f'Wrote list to file {filename}')
+	
+	upload_blob(bucket_name, str(pretty_json), filename)
+		
+	# Overwrite the most recent fiile
+	#with open('output/bulk-most-recent-results.json', 'w') as outfile:
+	#	outfile.write(str(pretty_json))
+		
+	copy_blob(bucket_name, filename, bucket_name, 'bulk-most-recent-results.json')	
+		
+	print('Overwrote new version of output/bulk-most-recent-results.json')
+	
+	
+	# Do some cleanup and delete our temp file
+	if os.path.exists('output/search-most-recent-list.txt'):
+	  os.remove('output/search-most-recent-list.txt')
+	  print('removed temp file')
+	else:
+	  print("The file does not exist")
+	
+	print('Done!')
 
-
-# Do some cleanup and delete our temp file
-if os.path.exists('output/search-most-recent-list.txt'):
-  os.remove('output/search-most-recent-list.txt')
-  print('removed temp file')
-else:
-  print("The file does not exist")
-
-print('Done!')
+def pubsub_entry(event, context):
+	bulk()
+if __name__ == "__main__":
+	bulk()

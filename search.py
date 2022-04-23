@@ -63,43 +63,49 @@ def copy_blob( bucket_name, blob_name, destination_bucket_name, destination_blob
     )
 
 
-
-print('Starting Censys search...')
-print('Listing IPs that return HTTP 451 and have a response body larger than 0')
-print(f'Querying up to {pages} pages with {per_page} results per page - possibly up to {pages * per_page} results! This may take a while...')
-
-# View all results - uncomment this line to make a real API call
-query = h.search("services.http.response.status_code=451 AND NOT services.http.response.body_size=0", per_page=per_page, pages=pages, virtual_hosts="INCLUDE")
-
-all_results = {}
-
-for page in query:
-	for item in page:
-		all_results[item['ip']] = item
+def search():
+	print('Starting Censys search...')
+	print('Listing IPs that return HTTP 451 and have a response body larger than 0')
+	print(f'Querying up to {pages} pages with {per_page} results per page - possibly up to {pages * per_page} results! This may take a while...')
+	
+	# View all results - uncomment this line to make a real API call
+	query = h.search("services.http.response.status_code=451 AND NOT services.http.response.body_size=0", per_page=per_page, pages=pages, virtual_hosts="INCLUDE")
+	
+	all_results = {}
+	
+	for page in query:
+		for item in page:
+			all_results[item['ip']] = item
+		
+		
 	
 	
-
-
-
-query = all_results
-result_count = len(all_results)
-print(f'Finished Searching... now parsing + listing {result_count} addresses')
-
-
-timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
-filename = 'ip-list/search-' + timestr + '.txt'
-all_results = ""
-for result in query:
-	all_results += query[result]['ip']
-	all_results += '\n'
 	
-# Write the file into a Cloud Storage object
-upload_blob(bucket_name, all_results, filename)
+	query = all_results
+	result_count = len(all_results)
+	print(f'Finished Searching... now parsing + listing {result_count} addresses')
 	
-# Copy that timestamped list into a common list that we can access the next time the script runs	
-copy_blob(bucket_name, filename, bucket_name, 'search-most-recent-list.txt')
+	
+	timestr = time.strftime("%Y-%m-%d_%H-%M-%S")
+	filename = 'ip-list/search-' + timestr + '.txt'
+	all_results = ""
+	for result in query:
+		all_results += query[result]['ip']
+		all_results += '\n'
+		
+	# Write the file into a Cloud Storage object
+	upload_blob(bucket_name, all_results, filename)
+		
+	# Copy that timestamped list into a common list that we can access the next time the script runs	
+	copy_blob(bucket_name, filename, bucket_name, 'search-most-recent-list.txt')
+	
+	print('Overwrote new version of search-most-recent-list.txt')
+	
+	
+	print('Done!')
 
-print('Overwrote new version of search-most-recent-list.txt')
 
-
-print('Done!')
+def pubsub_entry(event, context):
+	search()
+if __name__ == "__main__":
+	search()
