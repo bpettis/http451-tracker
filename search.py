@@ -7,9 +7,12 @@ import json, time, os
 bucket_name = '451-response-stats'
 
 project_id = 'http-451-tracker'
-topic_id = 'bulk'
+topic_id = 'search'
 publisher = pubsub_v1.PublisherClient()
-topic_path = publisher.topic_path(project_id, topic_id)
+topic_path = 'projects/{project_id}/topics/{topic}'.format(
+    project_id=project_id,
+    topic=topic_id,  # Set this to something appropriate.
+)
 
 h = CensysHosts()
 
@@ -107,7 +110,7 @@ def search():
 	
 	print('Overwrote new version of search-most-recent-list.txt')
 	
-	topic = publisher.create_topic(request={"name": topic_path})
+	message = publisher.publish(topic_path, b'Search finished - Start Bulk!')  
 	print('Done!')
 
 

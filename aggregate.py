@@ -15,9 +15,12 @@ all_codes = [101,200,201,202,203,204,301,302,303,307,308,400,401,402,403,404,405
 bucket_name = '451-response-stats'
 
 project_id = 'http-451-tracker'
-topic_id = 'aggregate'
+topic_id = 'search'
 publisher = pubsub_v1.PublisherClient()
-topic_path = publisher.topic_path(project_id, topic_id)
+topic_path = 'projects/{project_id}/topics/{topic}'.format(
+    project_id=project_id,
+    topic=topic_id,  # Set this to something appropriate.
+)
 
 # upload_blob function to store object in a Google Cloud Storage bucket 
 
@@ -166,8 +169,8 @@ def aggregate():
 	  os.remove("aggregate-temp.csv")
 	else:
 	  print("The file does not exist")
-	  
-	topic = publisher.create_topic(request={"name": topic_path})
+
+	message = publisher.publish(topic_path, b'Aggregate finished - Start Search!')  
 	  
 	print('Done!')
 	return

@@ -11,9 +11,13 @@ filename = '/tmp/search-most-recent-list.txt'
 bucket_name = '451-response-stats'
 
 project_id = 'http-451-tracker'
-topic_id = 'parse'
+topic_id = 'search'
 publisher = pubsub_v1.PublisherClient()
-topic_path = publisher.topic_path(project_id, topic_id)
+
+topic_path = 'projects/{project_id}/topics/{topic}'.format(
+	project_id=project_id,
+    topic=topic_id,  # Set this to something appropriate.
+)
 
 # download_blob function to get an object from the Google Cloud Storage bucket
 # 
@@ -145,7 +149,7 @@ def bulk():
 	else:
 	  print("The file does not exist")
 	
-	topic = publisher.create_topic(request={"name": topic_path})
+	message = publisher.publish(topic_path, b'Bulk finished - Start Parse!')  
 	print('Done!')
 
 def pubsub_entry(event, context):
