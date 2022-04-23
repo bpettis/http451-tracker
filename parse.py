@@ -107,7 +107,7 @@ def parse():
 							try:
 								outfile.write(str(item) + ': ' + str(service['http']['response']['headers'][item][0]) + '\n')
 							except:
-								print('writing HTTP head failed for ' + str(bulk_data[host]['ip'])
+								print('writing HTTP head failed for ' + str(bulk_data[host]['ip']))
 						outfile.write('\n\n')
 						outfile.write(str(service['http']['response']['body']))
 					
@@ -115,11 +115,12 @@ def parse():
 					with open(html_filename, 'w') as html:
 						try:
 							html.write(str(service['http']['response']['body']))
-							print('wrote HTTP body'
 						except:
 							print(f'writing HTTP body failed for ' + str(bulk_data[host]['ip'])
 					upload_file(bucket_name, html_filename, html_bucket_filename)
 						
+				else:
+					print('not 451')
 				
 			except:
 				print('service detection failed - likely not http\n')
