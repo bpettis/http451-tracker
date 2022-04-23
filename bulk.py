@@ -107,6 +107,7 @@ def copy_blob( bucket_name, blob_name, destination_bucket_name, destination_blob
 
 def bulk():
 	# Get the most recent file from cloud
+	filename = '/tmp/search-most-recent-list.txt'
 	download_blob(bucket_name, 'search-most-recent-list.txt', filename)
 	
 	# Read IP addresses from most recent search into an array
