@@ -32,6 +32,19 @@ Censys ASM API Key: XXX
 Successfully authenticated
 ```
 
+## Google Cloud Storage
+The scripts are set up to stash content in a Google Cloud Storage bucket. When running the scripts, you will need to have a service account configured in (Google Cloud)["https://cloud.google.com"] - you will also need to create an authentication key for the service account, and ensure that the account has the "Storage Admin" and "Pub/Sub Publisher" roles. Make sure that your environment has the `GOOGLE_APPLICATION_CREDENTIALS` variable set so that it knows to use this auth key.
+
+If you are make a new version of these scripts, you will need to substitute the top of each file with the correct project-id and bucket-name that matches _your_ Google Cloud project setup
+
+I have tested the scripts running in Google Cloud Functions in the Python 3.9 runtime environment. The scripts each send a Pub/Sub notification to trigger the next script. The last two scripts are pretty beefy and pull a lot of data, so be sure to allocate enough memory for them to run!
+
+- Aggregate (256MB)
+- Search (256MB)
+- Bulk (4GB)
+- Parse (4GB)
+
+
 # Usage
 
 - To be written... eventually
@@ -89,8 +102,8 @@ To run the search:
 This script looks through the most recent `bulk-most-recent-results.json` file and parses _all_ of the returned data and produces individual files with the HTTP respons from each host
 
 These resulting files are saved in output/responses/[TIMESTAMP]/
-- 
-
+- [TIMESTAMP]-[IP ADDRESS].txt - contains the HTTP header and response body
+- [TIMESTAMP]-[IP ADDRESS].html - contains the HTTP response body only -- Note: this will _always_ save the body as an HTML file, even if the body is not HTML. Sorry about it.
 To run the script:
 
 `python3 parse.py`
