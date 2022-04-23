@@ -39,4 +39,5 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
 # Copy Composer and Install the PHP dependencies
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+RUN apt-get update && apt-get install -y git
 RUN composer require google/cloud-storage
