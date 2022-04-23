@@ -6,7 +6,7 @@ print('Gathering bulk data for the list of recent IP addresses')
 
 h = CensysHosts()
 
-filename = 'output/search-most-recent-list.txt'
+filename = '/tmp/search-most-recent-list.txt'
 bucket_name = '451-response-stats'
 
 # download_blob function to get an object from the Google Cloud Storage bucket
@@ -133,8 +133,8 @@ def bulk():
 	
 	
 	# Do some cleanup and delete our temp file
-	if os.path.exists('output/search-most-recent-list.txt'):
-	  os.remove('output/search-most-recent-list.txt')
+	if os.path.exists('/tmp/search-most-recent-list.txt'):
+	  os.remove('/tmp/search-most-recent-list.txt')
 	  print('removed temp file')
 	else:
 	  print("The file does not exist")

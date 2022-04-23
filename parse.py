@@ -2,7 +2,7 @@ import json, time, os
 from google.cloud import storage
 
 
-filename = 'output/bulk-most-recent-results.json'
+filename = '/tmp/bulk-most-recent-results.json'
 timestr = time.strftime("%Y-%m-%d_%H-%M")
 bucket_name = '451-response-stats'
 
@@ -91,15 +91,15 @@ def parse():
 	#				print('\n')
 	#				
 					#create an output directory to try and organize things
-					path = 'output/responses/' + timestr
+					path = '/tmp/responses/' + timestr
 					isExist = os.path.exists(path)
 					if not isExist:
 						os.makedirs(path)
 						print("The new directory is created!")
 					
-					response_filename = 'output/responses/' + timestr + '/'+ str(bulk_data[host]['ip']) + '.txt'
+					response_filename = '/tmp/responses/' + timestr + '/'+ str(bulk_data[host]['ip']) + '.txt'
 					response_bucket_filename = 'responses/' + timestr + '/'+ str(bulk_data[host]['ip']) + '.txt'
-					html_filename = 'output/responses/' + timestr + '/' + str(bulk_data[host]['ip']) + '.html'
+					html_filename = '/tmp/responses/' + timestr + '/' + str(bulk_data[host]['ip']) + '.html'
 					html_bucket_filename = 'responses/' + timestr + '/' + str(bulk_data[host]['ip']) + '.html'
 					with open(response_filename, 'w') as outfile:
 						print('writing HTTP headers')
