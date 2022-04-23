@@ -48,13 +48,27 @@
 			<section>
 				<h3>Aggregate Data</h3>
 				<p></p>
-
+				<table>
 				<?php
+				# This is clunky but it works!!
+				
 				$object = $bucket->object('aggregate.csv');
 				$contents = $object->downloadAsString();
-				print($contents);
+				$contents = str_replace(PHP_EOL, ";", $contents);
+				$rows = explode(";", $contents);
+				foreach ($rows as $row) {
+					echo "<tr>";
+					$cells = explode(",", $row);
+					foreach ($cells as $cell) {
+						echo "<td>";
+						echo $cell;
+						echo "</td>";
+					}
+					echo "</tr>";
+				}
 				?>
-
+				</table>
+				
 				<p>Each JSON file contains a count of the number of hosts responding with a given HTTP response code at the time the script ran</p>
 				<ul>
 				<?php
