@@ -8,7 +8,10 @@
         <meta name="author" content="Ben Pettis" />
         <title>Tracking the HTTP 451 Response Code</title>
         <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
 		
@@ -29,45 +32,19 @@
 	<body>
 	<div class="d-flex" id="wrapper">
 		<!-- Sidebar-->
-            <div class="border-end bg-white" id="sidebar-wrapper">
-                <div class="sidebar-heading border-bottom bg-light">HTTP 451</div>
-                <div class="list-group list-group-flush">
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Aggregate Stats</a>
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Graphs?</a>
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">HTTP Responses</a>
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">IP Lists</a>
-                    <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">Bulk Data</a>
-                </div>
-            </div>
+        <?php include('shared/sidebar.php'); ?>
+		
 		<!-- Page content wrapper-->
         <div id="page-content-wrapper">
 		
 		<!-- Top navigation-->
-		<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-			<div class="container-fluid">
-				<button class="btn btn-primary" id="sidebarToggle">Data Menu</button>
-				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-				<div class="collapse navbar-collapse" id="navbarSupportedContent">
-					<ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-						<li class="nav-item active"><a class="nav-link" href="#!">Home</a></li>
-						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About</a>
-							<div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-								<a class="dropdown-item" href="#!">Project Description</a>
-								<a class="dropdown-item" href="#!">Sample Code</a>
-								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="#!">Credits</a>
-							</div>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-		 <!-- Page content-->
+		<?php include('shared/topnav.php'); ?>
+		
+		
+		<!-- Page content-->
         <div class="container-fluid">
 		<main>
 			<h1>Tracking the HTTP 451 Response Code</h1>
-			<h2><?php echo "Hello world!" ?></h2>
 			<p>This website is still under construction -  Please imagine that it is still the 1990s and this is Geocities...</p>
 			<img src="images/construction.gif" alt="" />
 			<p>Despite its name describe it as “world wide,” the Web is not, and perhaps never has been, truly global. The individual nation-state still matters and exercises its power within online spaces—even at the level of the protocol—to control where and how media can move. The Hypertext Transfer Protocol (HTTP) is the major technological backbone to the World Wide Web and describes the technical standards for computers to follow and exchange hypertext documents with each other. A recently adopted HTTP standard, the “451 – Unavailable for Legal Reasons” response code, shows that legal structures of the nation operate in online spaces and represents the continued restrictions on the flow of media through the Web. Though the extent of its actual implementation remains difficult to determine, the existence of the HTTP 451 status code represents the intertwined nature of law, technology, and cultural practices and prompts us to reconsider just how “worldwide” the World Wide Web is. I argue that the 451 code shows that the Web has not eliminated the significance of national borders and in fact has enabled entirely new fine-grained control over how media does and does not move. A secondary goal of this paper is to introduce “full stack historiography” as a model of Web history research in which the protocols and technical underpinnings of the Web are confronted alongside the immediately apparent text to piece together a more expansive view of online media. By studying the implementation of HTTP 451 status codes across multiple levels of the Web stack, I show how law and regulation continue to operate online.</p>
@@ -184,17 +161,8 @@
 			</section>
 		</main>
 		
-		<footer>
-			Host scan data is Copyright &copy; <?php echo date("Y"); ?> <a href="https://censys.io">Censys</a> <br />
-			Website design and data analysis <span class="copy-left">&copy;</span> 2022 - <?php echo date("Y"); ?> Ben Pettis - Some Rights Reserved <br />
-			Except where otherwise noted, this work is released under a Creative Commons License <br />
-			<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">(CC-BY-NC-SA 4.0)</a>
-			
-			<!-- Bootstrap core JS-->
-			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-			<!-- Core theme JS-->
-			<script src="js/scripts.js"></script>
-		</footer>
+		<?php include('shared/footer.php'); ?>
+		
 		</div>
 		</div>
 	</div>
