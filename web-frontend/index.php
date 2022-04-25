@@ -72,68 +72,7 @@
 				
 			</div>
 		
-			<section>
-				<h3>IP Lists</h3>
-				<p>These text files contain all of the hosts that returned an HTTP response code of 451 to the Censys scanners</p>
-				<ul>
-				<?php
-				$directoryPrefix = 'ip-list/';
-				$options = ['prefix' => $directoryPrefix];
-			
-				foreach ($bucket->objects($options) as $object) {
-					echo "<li>";
-					echo '<a href="https://storage.googleapis.com/451-response-stats/' . $object->name() . '">';
-					# printf('Object: %s' . PHP_EOL, $object->name());
-					print($object->name());
-					echo '</a>';
-					echo "</li>";
-				}
-				?>
-				</ul>
-			<hr />
-			</section>
-			
-			<section>
-				<h3>HTTP Responses</h3>
-				<p>The below list includes a generated version of the HTML page that a user may have seen when receiving an HTTP 451 error from a given host. The directory prefix indicates the date and time that the data was parses, and the file name indicates the IP address. The HTML file includes the entirety of the HTTP response body (which in most cases is HTML, but may have been raw text or JSON). The TXT file contains the full HTTP response, including the header.</p>
-				<ul>
-				<?php
-				$directoryPrefix = 'responses/';
-				$options = ['prefix' => $directoryPrefix];
-			
-				foreach ($bucket->objects($options) as $object) {
-					echo "<li>";
-					echo '<a href="https://storage.googleapis.com/451-response-stats/' . $object->name() . '">';
-					# printf('Object: %s' . PHP_EOL, $object->name());
-					print($object->name());
-					echo '</a>';
-					echo "</li>";
-				}
-				?>
-				</ul>
-			<hr />
-			</section>
-			
-			<section>
-				<h3>Bulk</h3>
-				<p>Each linked JSON file contains the complete data that Censys reported for each host from the above IP list. This includes <em>every</em> piece of information that Censys scanned from each host, including services other than HTTP</p>
-				<ul>
-				<?php
-				$directoryPrefix = 'bulk/';
-				$options = ['prefix' => $directoryPrefix];
-			
-				foreach ($bucket->objects($options) as $object) {
-					echo "<li>";
-					echo '<a href="https://storage.googleapis.com/451-response-stats/' . $object->name() . '">';
-					# printf('Object: %s' . PHP_EOL, $object->name());
-					print($object->name());
-					echo '</a>';
-					echo "</li>";
-				}
-				?>
-				</ul>
-			<hr />
-			</section>
+
 		</main>
 		
 		<?php include('shared/footer.php'); ?>
