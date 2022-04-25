@@ -58,23 +58,58 @@
 			<section>
 				<h3>HTTP Responses</h3>
 				<p>The below list includes a generated version of the HTML page that a user may have seen when receiving an HTTP 451 error from a given host. The directory prefix indicates the date and time that the data was parses, and the file name indicates the IP address. The HTML file includes the entirety of the HTTP response body (which in most cases is HTML, but may have been raw text or JSON). The TXT file contains the full HTTP response, including the header.</p>
-				<ul>
 				<?php
 				$directoryPrefix = 'responses/';
 				$options = ['prefix' => $directoryPrefix];
-			
+				$alldates = array();
 				foreach ($bucket->objects($options) as $object) {
-					echo "<li>";
-					echo '<a href="https://storage.googleapis.com/451-response-stats/' . $object->name() . '">';
-					# printf('Object: %s' . PHP_EOL, $object->name());
-					print(substr($object->name(), 10));
-					echo '</a>';
-					echo "</li>";
+					array_push($alldates, substr($object->name(), 0, 26));
 				}
+				$dates = array_unique($alldates);
 				?>
-				</ul>
+				
+				
 			<hr />
 			</section>
+			
+			<div>
+				<h3>HTTP Responses - Sorted by Scan Date</h3>
+				<div class="accordion" id="responses-accordian">
+				<?php
+				
+				foreach ($dates as $date) {
+					$options = ['prefix' => $date];
+					
+					# We have to truncate the name with substr(), but then add back in a prefix because HTML ID names break when they start with an integer
+					$date_truncated = 'responses-' . substr($date, 10);
+				?>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="<?php echo $date_truncated; ?>-heading">
+							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $date_truncated; ?>" aria-expanded="true" aria-controls="<?php echo $date_truncated; ?>">
+							<?php echo substr($date_truncated, 10); ?>
+							</button>
+						</h2>					
+					<div class="accordion-collapse collapse" id="<?php echo $date_truncated; ?>" aria-labelledby="<?php echo $date_truncated; ?>-heading">
+						<a href="#bottom-<?php echo $date_truncated; ?>" id="top-<?php echo $date_truncated; ?>">Jump to Bottom of Section</a> <br />
+						<ul>
+						<?php
+						foreach ($bucket->objects($options) as $object) {
+							echo "<li>";
+							echo '<a href="https://storage.googleapis.com/451-response-stats/' . $object->name() . '">';
+							# printf('Object: %s' . PHP_EOL, $object->name());
+							print(substr($object->name(), 10));
+							echo '</a>';
+							echo "</li>";
+						}
+						?>
+						</ul>
+						<a href="#top-<?php echo $date_truncated; ?>" id="bottom-<?php echo $date_truncated; ?>">Jump to Top of Section</a> <br />
+					</div>
+				<?php
+				}
+				?>
+				</div>
+			
 		</main>
 		
 		<?php include('shared/footer.php'); ?>
