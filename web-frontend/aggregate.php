@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="Ben Pettis" />
-        <title>Tracking the HTTP 451 Response Code</title>
+        <title>Aggregate Statistics | HTTP 451</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">

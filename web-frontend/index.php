@@ -44,11 +44,11 @@
 		<!-- Page content-->
         <div class="container-fluid">
 		<main>
-			<div>
+			<header>
 				<h1>Tracking the HTTP 451 Response Code</h1>
 				<p>This website is still under construction -  Please imagine that it is still the 1990s and this is Geocities...</p>
 				<img src="images/construction.gif" alt="" class="img-fluid"/>
-			</div>
+			</header>
 			
 			<div class="clearfix">
 				<img src="images/logo.png" class="img-thumbnail w-lg-25 ms-md-3 float-md-end" />
@@ -61,61 +61,17 @@
 			
 			<div class="row">
 				<div class="col">
-					graph 1
+					<img src="images/placeholder.png" class="img-thumbnail" />
 				</div>
 				<div class="col">
-					graph 2
+					<img src="images/placeholder.png" class="img-thumbnail" />
 				</div>
 				<div class="col">
-					graph 3
+					<img src="images/placeholder.png" class="img-thumbnail" />
 				</div>
 				
-				<hr />
 			</div>
 		
-			<section>
-				<h3>Aggregate Data</h3>
-				<p></p>
-				<table>
-				<?php
-				# This is clunky but it works!!
-				
-				$object = $bucket->object('aggregate.csv');
-				$contents = $object->downloadAsString();
-				$contents = str_replace(PHP_EOL, ";", $contents);
-				$rows = explode(";", $contents);
-				foreach ($rows as $row) {
-					echo "<tr>";
-					$cells = explode(",", $row);
-					foreach ($cells as $cell) {
-						echo "<td>";
-						echo $cell;
-						echo "</td>";
-					}
-					echo "</tr>";
-				}
-				?>
-				</table>
-				
-				<p>Each JSON file contains a count of the number of hosts responding with a given HTTP response code at the time the script ran</p>
-				<ul>
-				<?php
-				$directoryPrefix = 'aggregate/';
-				$options = ['prefix' => $directoryPrefix];
-			
-				foreach ($bucket->objects($options) as $object) {
-					echo "<li>";
-					echo '<a href="https://storage.googleapis.com/451-response-stats/' . $object->name() . '">';
-					# printf('Object: %s' . PHP_EOL, $object->name());
-					print($object->name());
-					echo '</a>';
-					echo "</li>";
-				}
-				?>
-				</ul>
-			<hr />
-			</section>
-			
 			<section>
 				<h3>IP Lists</h3>
 				<p>These text files contain all of the hosts that returned an HTTP response code of 451 to the Censys scanners</p>
