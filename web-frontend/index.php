@@ -60,13 +60,13 @@
 			</div>
 			
 			<div class="row">
-				<div class="col">
+				<div class="col-md">
 					<img src="images/placeholder.png" class="img-thumbnail" />
 				</div>
-				<div class="col">
+				<div class="col-md">
 					<img src="images/placeholder.png" class="img-thumbnail" />
 				</div>
-				<div class="col">
+				<div class="col-md">
 					<img src="images/placeholder.png" class="img-thumbnail" />
 				</div>
 				
