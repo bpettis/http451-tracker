@@ -10,3 +10,5 @@ vendor/
 # Exclude "build-time" ignore files.
 .dockerignore
 .gcloudignore
+
+output/
