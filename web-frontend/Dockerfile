@@ -43,4 +43,4 @@ RUN apt-get update && apt-get install -y git
 RUN composer require google/cloud-storage
 
 # Install GD support to be able to run JpGraph
-RUN apt-get update && apt-get install -y php-gd
+RUN apt-get update && apt-get install -y php7.4-gd
