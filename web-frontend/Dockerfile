@@ -45,11 +45,10 @@ RUN composer require google/cloud-storage
 # Install GD support to be able to run JpGraph
 # Install dependencies for GD and install GD with support for jpeg, png webp and freetype
 # Info about installing GD in PHP https://www.php.net/manual/en/image.installation.php
-RUN apk add --no-cache \
-        libjpeg-turbo-dev \
+RUN apt-get update && apt-get install -y \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
         libpng-dev \
-        libwebp-dev \
-        freetype-dev
 
 # As of PHP 7.4 we don't need to add --with-png
 RUN docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype
