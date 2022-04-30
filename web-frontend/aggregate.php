@@ -27,6 +27,308 @@
 	$storage = new StorageClient();
 	$bucket = $storage->bucket('451-response-stats');
 ?>
+
+<?php
+
+# Include the jpGraph files
+require_once ('jpgraph/jpgraph.php');
+require_once ('jpgraph/jpgraph_line.php');
+require_once ('jpgraph/jpgraph_bar.php');
+require_once ('jpgraph/jpgraph_pie.php');
+
+# Size for all graphs:
+$width = 800; $height = 600;
+
+# Read the HTTP 451 count data into an array
+
+function parse451count($bucket, &$timestamp, &$count) {
+	$object = $bucket->object('aggregate.csv');
+	$contents = $object->downloadAsString();
+	$contents = str_replace(PHP_EOL, ";", $contents);
+	$rows = explode(";", $contents);
+
+	# Figure out where to start pulling data from so that we only get the most recent data on the graph
+	$recentRows = count($rows) - 45;
+
+	foreach ($rows as $i => $row) {
+		# The first row is the header row, so we want to be sure to skip it. I think.
+		if ($i > $recentRows AND $i !== 0) {
+			$cells = explode(",", $row);
+			foreach ($cells as $j => $cell) {
+				# The aggregate.csv file has data for *all* http codes, and we only want the 451s, which are in the 33rd column
+				if ($j == 33) {
+					array_push($count, $cell);
+				# The first (0th) column has the dates, so we want to handle it differently
+				} elseif ($j == 0) {
+					$dateSplit = explode("_", $cell);
+					array_push($timestamp, $dateSplit[0]);
+				# Just skip everything else in the file
+				} else {
+					continue;
+				}
+			}
+		} else {
+			continue;
+		}
+
+
+	}
+}
+
+# Read data from a few different codes into an array
+function parseMultipleCodes($bucket, &$timestamp, &$count403, &$count404, &$count418, &$count451, &$count500, &$count502) {
+	$object = $bucket->object('aggregate.csv');
+	$contents = $object->downloadAsString();
+	$contents = str_replace(PHP_EOL, ";", $contents);
+	$rows = explode(";", $contents);
+
+	# Figure out where to start pulling data from so that we only get the most recent data on the graph
+	$recentRows = count($rows) - 20;
+
+	foreach ($rows as $i => $row) {
+		# The first row is the header row, so we want to be sure to skip it. I think.
+		if ($i > $recentRows AND $i !== 0) {
+			$cells = explode(",", $row);
+			foreach ($cells as $j => $cell) {
+				# The aggregate.csv file has data for *all* http codes, and we only want the 451s, which are in the 33rd column
+				if ($j == 33) {
+					array_push($count451, $cell);
+				# The data for 404 codes is in the 16th column
+				} elseif ($j == 16) {
+					array_push($count404, $cell);
+				# THe data for 403 codes is in the 15th column
+				} elseif ($j == 15) {
+					array_push($count403, $cell);
+				# Data for the 418 codes is in the 25th column
+				} elseif ($j == 25){
+					array_push($count418, $cell);
+				# Data for the 500 codes is in the 37th column
+				} elseif ($j == 37) {
+					array_push($count500, $cell);
+				#Data for the 502 codes is in the 39th column
+				} elseif ($j == 39) {
+					array_push($count502, $cell);
+				# The first (0th) column has the dates, so we want to handle it differently
+				} elseif ($j == 0) {
+					$dateSplit = explode("_", $cell);
+					array_push($timestamp, $dateSplit[0]);
+				# Just skip everything else in the file
+				} else {
+					continue;
+				}
+			}
+		} else {
+			continue;
+		}
+
+
+	}
+}
+
+# Read data from some codes to be used in the pie chart
+function parsePie($bucket, &$pieScanTime, &$pieData){
+	$object = $bucket->object('aggregate.csv');
+	$contents = $object->downloadAsString();
+	$contents = str_replace(PHP_EOL, ";", $contents);
+	$rows = explode(";", $contents);
+	#Next we reverse the array, because we only care about the most recent row (the most recent scan)
+	$row = array_reverse($rows);
+	# We grab the 1st item in the array (and not the zeroth) because there is a blank line at the end of the file
+	$cells = explode(',', $row[1]);
+	foreach ($cells as $i => $cell){
+		# The aggregate.csv file has data for *all* http codes, and we only want the 451s, which are in the 33rd column
+		if ($i == 33) {
+			array_push($pieData, $cell);
+		# The data for 404 codes is in the 16th column
+		} elseif ($i == 16) {
+			array_push($pieData, $cell);
+		# THe data for 403 codes is in the 15th column
+		} elseif ($i == 15) {
+			array_push($pieData, $cell);
+		# Data for the 418 codes is in the 25th column
+		} elseif ($i == 25){
+			array_push($pieData, $cell);
+		# Data for the 500 codes is in the 37th column
+		} elseif ($i == 37) {
+			array_push($pieData, $cell);
+		#Data for the 502 codes is in the 39th column
+		} elseif ($i == 39) {
+			array_push($pieData, $cell);
+		#Data for 200 codes is in the 2nd column
+		} elseif ($i == 2) {
+			array_push($pieData, $cell);
+		# Data for 301 codes is in the 7th column
+		} elseif ($i == 7) {
+			array_push($pieData, $cell);
+		# Data for 307 codes is in the 10th column
+		} elseif ($i == 10) {
+			array_push($pieData, $cell);
+		# The first (0th) column has the dates, so we want to handle it differently
+		} elseif ($i == 0) {
+			$dateSplit = explode("_", $cell);
+			$pieScanTime = $dateSplit[0];
+		# Just skip everything else in the row
+		} else {
+			continue;
+		}
+	}
+}
+
+# START Generate the aggregate-count line graph
+$aggregateTimestamp = array();
+$aggregateCount = array();
+parse451count($bucket, $aggregateTimestamp, $aggregateCount);
+
+
+
+// Create a new timer instance
+$timer = new JpgTimer();
+ 
+// Start the timer
+$timer->Push();
+// Create a graph instance
+$graph = new Graph($width,$height);
+
+// Make the bottom margin large enough to hold the timer value
+$graph->SetMargin(50,20,20,100);
+
+// Specify what scale we want to use,
+// int = integer scale for the X-axis
+// int = integer scale for the Y-axis
+$graph->SetScale('intint');
+
+// Setup a title for the graph
+$graph->title->Set('Count of HTTP 451 Responses');
+
+// Setup titles and X-axis labels
+// Set the tick numbers to the timestamp from the file
+$graph->xaxis->SetTickLabels($aggregateTimestamp);
+$graph->xaxis->SetLabelAngle('45');
+
+
+
+// Create the linear plot
+$lineplot=new LinePlot($aggregateCount);
+// Add some fill to this bad boy
+$lineplot->SetFillColor('orange@0.5');
+// Add the plot to the graph
+$graph->Add($lineplot);
+// Add the timing data to the graph
+$graph->footer->right->Set('Graph generated in (ms): ');
+$graph->footer->SetTimer($timer);
+// Save the graph
+$graph->Stroke('images/tmp/aggregate-count-line-large.jpg');
+
+# END aggregate-count line graph
+
+#################
+
+# START multiple-code grouped bar graph
+
+$groupedBarTimestamp = array();
+$groupedBar403 = array();
+$groupedBar404 = array();
+$groupedBar418 = array();
+$groupedBar451 = array();
+$groupedBar500 = array();
+$groupedBar502 = array();
+
+parseMultipleCodes($bucket, $groupedBarTimestamp, $groupedBar403, $groupedBar404, $groupedBar418, $groupedBar451, $groupedBar500, $groupedBar502);
+
+// Create a new timer instance
+$timer = new JpgTimer();
+ 
+// Start the timer
+$timer->Push();
+
+$graph = new Graph($width,$height);
+$graph->SetScale("textlin");
+
+
+// Make the bottom margin large enough to hold the timer value
+$graph->SetMargin(50,20,20,125);
+
+// Create the bar plots
+$b1plot = new BarPlot($groupedBar403);
+$b1plot->SetFillColor("orange");
+$b1plot->SetLegend("403");
+$b2plot = new BarPlot($groupedBar404);
+$b2plot->SetFillColor("blue");
+$b2plot->SetLegend("404");
+$b3plot = new BarPlot($groupedBar418);
+$b3plot->SetFillColor("burlywood4");
+$b3plot->SetLegend('418');
+$b4plot = new BarPlot($groupedBar451);
+$b4plot->SetFillColor("red");
+$b4plot->SetLegend('451');
+$b5plot = new BarPlot($groupedBar500);
+$b5plot->SetFillColor("yellow");
+$b5plot->SetLegend('500');
+$b6plot = new BarPlot($groupedBar500);
+$b6plot->SetFillColor("purple");
+$b6plot->SetLegend('502');
+// Create the grouped bar plot
+$gbplot = new GroupBarPlot(array($b1plot,$b2plot,$b3plot, $b4plot, $b5plot, $b6plot));
+
+// ...and add it to the graPH
+$graph->Add($gbplot);
+
+// Setup titles and X-axis labels
+// Set the tick numbers to the timestamp from the file
+$graph->xaxis->SetTickLabels($groupedBarTimestamp);
+$graph->xaxis->SetLabelAngle('45');
+
+$graph->yaxis->SetLabelAngle('90');
+
+$graph->title->Set("Proportions of Selected HTTP Error Codes");
+$graph->yaxis->title->Set("Count of Hosts");
+$graph->legend->SetPos(0.5,0.98,'center','bottom');
+
+// Add the timing data to the graph
+$graph->footer->right->Set('Graph generated in (ms): ');
+$graph->footer->SetTimer($timer);
+$graph->Stroke('images/tmp/grouped-bar-chart-large.jpg');
+# END multiple-code grouped bar graph
+
+# START generate the pie-chart
+
+$pieData = array();
+$pieScanTime = 'unknown time';
+
+parsePie($bucket, $pieScanTime, $pieData);
+// Create a new timer instance
+$timer = new JpgTimer();
+ 
+// Start the timer
+$timer->Push();
+$graph = new PieGraph($width,$height);
+$graph->title->Set("Selected Codes from Last Scan (" . $pieScanTime . ")");
+ 
+$p1 = new PiePlot($pieData);
+
+
+
+$legend = array("200","301","307","403","404", "418", "451", "500", "502");
+$labels = array("200 - (%.0f)",
+                "301 - (%.0f)","307 - (%.0f)",
+                "403 - (%.0f)","404 - (%.0f)",
+                "418 - (%.0f)","451 - (%.0f)",
+                "500 - (%.0f)","502 - (%.0f)",
+                );
+
+$p1->SetLabels($labels);
+$p1->SetLabelPos(1);
+$p1->SetLegends($legend);
+$p1->SetLabelType(PIE_VALUE_ABS);
+$p1->SetGuideLines( true , false );
+$graph->Add($p1);
+$p1->SetCenter(0.4, 0.45);
+// Add the timing data to the graph
+$graph->footer->right->Set('Graph generated in (ms): ');
+$graph->footer->SetTimer($timer);
+$graph->Stroke('images/tmp/pie-chart-large.jpg');
+# END pie chart
+?>
 	</head>
 	
 	<body>
@@ -53,23 +355,40 @@
 			<div class="clearfix">
 				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 				<hr />
+				<p>Click <a href="#downloads">here</a> to skip past the charts to the downloadable data</p>
 			</div>
 			
 			<div class="row">
-				<div class="col-md">
-					<img src="images/placeholder.png" class="img-thumbnail" />
+				<div class="col-md-6">
+					<img src="images/tmp/aggregate-count-line-large.jpg" class="img-thumbnail" />
+
+					
 				</div>
-				<div class="col-md">
-					<img src="images/placeholder.png" class="img-thumbnail" />
+				<div class="col-md-6">
+					<h3>Line Chart!</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 				</div>
-				<div class="col-md">
-					<img src="images/placeholder.png" class="img-thumbnail" />
+				<hr /> 
+				<div class="col-md-6">
+					<img src="images/tmp/grouped-bar-chart-large.jpg" class="img-thumbnail" />
 				</div>
-				
+				<div class="col-md-6">
+					<h3>Bar chart!</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
+				<hr /> 
+				<div class="col-md-6">
+					<img src="images/tmp/pie-chart-large.jpg" class="img-thumbnail" />
+				</div>
+				<div class="col-md-6">
+					<h3>Pie chart!</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
 			</div>
 					
+			<hr />
 			
-			<div>
+			<div id="downloads">
 				<h3>Aggregate Data - Separated by Scan</h3>
 				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 				<p>You can download the most recent CSV file of all the aggregate data <a href="https://storage.googleapis.com/451-response-stats/aggregate.csv">here</a>.</p>
