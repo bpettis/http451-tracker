@@ -54,3 +54,6 @@ RUN apt-get update && apt-get install -y \
 # As of PHP 7.4 we don't need to add --with-png
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype
 RUN docker-php-ext-install gd
+
+# Set permissions of the temp images directory
+RUN chmod /var/www/html/images/tmp/aggregate-count-line-large.jpg && chmod /var/www/html/images/tmp/aggregate-count-line.jpg && chmod /var/www/html/images/tmp/grouped-bar-chart-large.jpg && chmod /var/www/html/images/tmp/grouped-bar-chart.jpg && chmod /var/www/html/images/tmp/pie-chart-large.jpg && chmod /var/www/html/images/tmp/pie-chart.jpg
