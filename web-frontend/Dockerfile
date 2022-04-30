@@ -51,5 +51,5 @@ RUN apt-get update && apt-get install -y \
         libpng-dev \
 
 # As of PHP 7.4 we don't need to add --with-png
-RUN docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype
+RUN docker-php-ext-configure gd --with-webp --with-freetype
 RUN docker-php-ext-install gd
