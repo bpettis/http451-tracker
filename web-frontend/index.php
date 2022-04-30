@@ -33,7 +33,10 @@
 # Include the jpGraph files
 require_once ('jpgraph/jpgraph.php');
 require_once ('jpgraph/jpgraph_line.php');
+require_once ('jpgraph/jpgraph_bar.php');
 
+# Size for all graphs:
+$width = 600; $height = 600;
 
 # Read the HTTP 451 count data into an array
 
@@ -71,15 +74,63 @@ function parse451count($bucket, &$timestamp, &$count) {
 	}
 }
 
-# Generate the aggregate-count line graph
+# Read data from a few different codes into an array
+function parseMultipleCodes($bucket, &$timestamp, &$count403, &$count404, &$count418, &$count451, &$count500, &$count502) {
+	$object = $bucket->object('aggregate.csv');
+	$contents = $object->downloadAsString();
+	$contents = str_replace(PHP_EOL, ";", $contents);
+	$rows = explode(";", $contents);
+
+	# Figure out where to start pulling data from so that we only get the most recent data on the graph
+	$recentRows = count($rows) - 15;
+
+	foreach ($rows as $i => $row) {
+		# The first row is the header row, so we want to be sure to skip it. I think.
+		if ($i > $recentRows AND $i !== 0) {
+			$cells = explode(",", $row);
+			foreach ($cells as $j => $cell) {
+				# The aggregate.csv file has data for *all* http codes, and we only want the 451s, which are in the 33rd column
+				if ($j == 33) {
+					array_push($count451, $cell);
+				# The data for 404 codes is in the 16th column
+				} elseif ($j == 16) {
+					array_push($count404, $cell);
+				# THe data for 403 codes is in the 15th column
+				} elseif ($j == 15) {
+					array_push($count403, $cell);
+				# Data for the 418 codes is in the 25th column
+				} elseif ($j == 25){
+					array_push($count418, $cell);
+				# Data for the 500 codes is in the 37th column
+				} elseif ($j == 37) {
+					array_push($count500, $cell);
+				#Data for the 502 codes is in the 39th column
+				} elseif ($j == 39) {
+					array_push($count502, $cell);
+				# The first (0th) column has the dates, so we want to handle it differently
+				} elseif ($j == 0) {
+					$dateSplit = explode("_", $cell);
+					array_push($timestamp, $dateSplit[0]);
+				# Just skip everything else in the file
+				} else {
+					continue;
+				}
+			}
+		} else {
+			continue;
+		}
+
+
+	}
+}
+
+# START Generate the aggregate-count line graph
 $aggregateTimestamp = array();
 $aggregateCount = array();
 parse451count($bucket, $aggregateTimestamp, $aggregateCount);
 
 
 
-
-$width = 600; $height = 600;
 // Create a new timer instance
 $timer = new JpgTimer();
  
@@ -105,6 +156,7 @@ $graph->xaxis->SetTickLabels($aggregateTimestamp);
 $graph->xaxis->SetLabelAngle('45');
 
 
+
 // Create the linear plot
 $lineplot=new LinePlot($aggregateCount);
 // Add some fill to this bad boy
@@ -116,6 +168,77 @@ $graph->footer->right->Set('Graph generated in (ms): ');
 $graph->footer->SetTimer($timer);
 // Save the graph
 $graph->Stroke('images/tmp/aggregate-count-line.jpg');
+
+# END aggregate-count line graph
+
+#################
+
+# START multiple-code grouped bar graph
+
+$groupedBarTimestamp = array();
+$groupedBar403 = array();
+$groupedBar404 = array();
+$groupedBar418 = array();
+$groupedBar451 = array();
+$groupedBar500 = array();
+$groupedBar502 = array();
+
+parseMultipleCodes($bucket, $groupedBarTimestamp, $groupedBar403, $groupedBar404, $groupedBar418, $groupedBar451, $groupedBar500, $groupedBar502);
+
+// Create a new timer instance
+$timer = new JpgTimer();
+ 
+// Start the timer
+$timer->Push();
+
+$graph = new Graph($width,$height);
+$graph->SetScale("textlin");
+
+
+// Make the bottom margin large enough to hold the timer value
+$graph->SetMargin(50,20,20,125);
+
+// Create the bar plots
+$b1plot = new BarPlot($groupedBar403);
+$b1plot->SetFillColor("orange");
+$b1plot->SetLegend("403");
+$b2plot = new BarPlot($groupedBar404);
+$b2plot->SetFillColor("blue");
+$b2plot->SetLegend("404");
+$b3plot = new BarPlot($groupedBar418);
+$b3plot->SetFillColor("burlywood4");
+$b3plot->SetLegend('418');
+$b4plot = new BarPlot($groupedBar451);
+$b4plot->SetFillColor("red");
+$b4plot->SetLegend('451');
+$b5plot = new BarPlot($groupedBar500);
+$b5plot->SetFillColor("yellow");
+$b5plot->SetLegend('500');
+$b6plot = new BarPlot($groupedBar500);
+$b6plot->SetFillColor("purple");
+$b6plot->SetLegend('502');
+// Create the grouped bar plot
+$gbplot = new GroupBarPlot(array($b1plot,$b2plot,$b3plot, $b4plot, $b5plot, $b6plot));
+
+// ...and add it to the graPH
+$graph->Add($gbplot);
+
+// Setup titles and X-axis labels
+// Set the tick numbers to the timestamp from the file
+$graph->xaxis->SetTickLabels($groupedBarTimestamp);
+$graph->xaxis->SetLabelAngle('45');
+
+$graph->yaxis->SetLabelAngle('90');
+
+$graph->title->Set("Proportions of Selected HTTP Error Codes");
+$graph->yaxis->title->Set("Count of Hosts");
+$graph->legend->SetPos(0.5,0.98,'center','bottom');
+
+// Add the timing data to the graph
+$graph->footer->right->Set('Graph generated in (ms): ');
+$graph->footer->SetTimer($timer);
+$graph->Stroke('images/tmp/grouped-bar-chart.jpg');
+# END multiple-code grouped bar graph
 ?>
 	</head>
 	
@@ -154,7 +277,7 @@ $graph->Stroke('images/tmp/aggregate-count-line.jpg');
 					
 				</div>
 				<div class="col-md">
-					<img src="images/placeholder.png" class="img-thumbnail" />
+					<img src="images/tmp/grouped-bar-chart.jpg" class="img-thumbnail" />
 				</div>
 				<div class="col-md">
 					<img src="images/placeholder.png" class="img-thumbnail" />
