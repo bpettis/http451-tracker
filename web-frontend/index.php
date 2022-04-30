@@ -27,6 +27,83 @@
 	$storage = new StorageClient();
 	$bucket = $storage->bucket('451-response-stats');
 ?>
+
+<?php
+
+# Include the jpGraph files
+require_once ('jpgraph/jpgraph.php');
+require_once ('jpgraph/jpgraph_line.php');
+
+
+# Read the HTTP 451 count data into an array
+
+function parse451count($bucket, &$timestamp, &$count) {
+	$object = $bucket->object('aggregate.csv');
+	$contents = $object->downloadAsString();
+	$contents = str_replace(PHP_EOL, ";", $contents);
+	$rows = explode(";", $contents);
+
+	# Figure out where to start pulling data from so that we only get the most recent data on the graph
+	$recentRows = count($rows) - 20;
+
+	foreach ($rows as $i => $row) {
+		# The first row is the header row, so we want to be sure to skip it. I think.
+		if ($i > $recentRows AND $i !== 0) {
+			$cells = explode(",", $row);
+			foreach ($cells as $j => $cell) {
+				# The aggregate.csv file has data for *all* http codes, and we only want the 451s, which are in the 33rd column
+				if ($j == 33) {
+					array_push($count, $cell);
+				# The first (0th) column has the dates, so we want to handle it differently
+				} elseif ($j == 0) {
+					$dateSplit = explode("_", $cell);
+					array_push($timestamp, $dateSplit[0]);
+				# Just skip everything else in the file
+				} else {
+					continue;
+				}
+			}
+		} else {
+			continue;
+		}
+
+
+	}
+}
+
+# Generate the aggregate-count line graph
+$aggregateTimestamp = array();
+$aggregateCount = array();
+parse451count($bucket, $aggregateTimestamp, $aggregateCount);
+$width = 600; $height = 600;
+
+// Create a graph instance
+$graph = new Graph($width,$height);
+
+// Specify what scale we want to use,
+// int = integer scale for the X-axis
+// int = integer scale for the Y-axis
+$graph->SetScale('intint');
+
+// Setup a title for the graph
+$graph->title->Set('Count of HTTP 451 Responses');
+
+// Setup titles and X-axis labels
+// Set the tick numbers to the timestamp from the file
+$graph->xaxis->SetTickLabels($aggregateTimestamp);
+$graph->xaxis->SetLabelAngle('45');
+
+
+// Create the linear plot
+$lineplot=new LinePlot($aggregateCount);
+// Add some fill to this bad boy
+$lineplot->SetFillColor('orange@0.5');
+// Add the plot to the graph
+$graph->Add($lineplot);
+
+// Save the graph
+$graph->Stroke('images/tmp/aggregate-count-line.jpg');
+?>
 	</head>
 	
 	<body>
@@ -39,8 +116,6 @@
 		
 		<!-- Top navigation-->
 		<?php include('shared/topnav.php'); ?>
-		
-		
 		<!-- Page content-->
         <div class="container-fluid">
 		<main>
@@ -61,7 +136,9 @@
 			
 			<div class="row">
 				<div class="col-md">
-					<img src="images/placeholder.png" class="img-thumbnail" />
+					<img src="images/tmp/aggregate-count-line.jpg" class="img-thumbnail" />
+
+					
 				</div>
 				<div class="col-md">
 					<img src="images/placeholder.png" class="img-thumbnail" />
