@@ -37,7 +37,7 @@ require_once ('jpgraph/jpgraph_bar.php');
 require_once ('jpgraph/jpgraph_pie.php');
 
 # Size for all graphs:
-$width = 600; $height = 600;
+$width = 800; $height = 600;
 
 # Read the HTTP 451 count data into an array
 
@@ -48,7 +48,7 @@ function parse451count($bucket, &$timestamp, &$count) {
 	$rows = explode(";", $contents);
 
 	# Figure out where to start pulling data from so that we only get the most recent data on the graph
-	$recentRows = count($rows) - 20;
+	$recentRows = count($rows) - 45;
 
 	foreach ($rows as $i => $row) {
 		# The first row is the header row, so we want to be sure to skip it. I think.
@@ -83,7 +83,7 @@ function parseMultipleCodes($bucket, &$timestamp, &$count403, &$count404, &$coun
 	$rows = explode(";", $contents);
 
 	# Figure out where to start pulling data from so that we only get the most recent data on the graph
-	$recentRows = count($rows) - 15;
+	$recentRows = count($rows) - 20;
 
 	foreach ($rows as $i => $row) {
 		# The first row is the header row, so we want to be sure to skip it. I think.
@@ -217,7 +217,7 @@ $graph->Add($lineplot);
 $graph->footer->right->Set('Graph generated in (ms): ');
 $graph->footer->SetTimer($timer);
 // Save the graph
-$graph->Stroke('images/tmp/aggregate-count-line.jpg');
+$graph->Stroke('images/tmp/aggregate-count-line-large.jpg');
 
 # END aggregate-count line graph
 
@@ -287,7 +287,7 @@ $graph->legend->SetPos(0.5,0.98,'center','bottom');
 // Add the timing data to the graph
 $graph->footer->right->Set('Graph generated in (ms): ');
 $graph->footer->SetTimer($timer);
-$graph->Stroke('images/tmp/grouped-bar-chart.jpg');
+$graph->Stroke('images/tmp/grouped-bar-chart-large.jpg');
 # END multiple-code grouped bar graph
 
 # START generate the pie-chart
@@ -326,7 +326,7 @@ $p1->SetCenter(0.4, 0.45);
 // Add the timing data to the graph
 $graph->footer->right->Set('Graph generated in (ms): ');
 $graph->footer->SetTimer($timer);
-$graph->Stroke('images/tmp/pie-chart.jpg');
+$graph->Stroke('images/tmp/pie-chart-large.jpg');
 # END pie chart
 ?>
 	</head>
@@ -355,25 +355,40 @@ $graph->Stroke('images/tmp/pie-chart.jpg');
 			<div class="clearfix">
 				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 				<hr />
+				<p>Click <a href="#downloads">here</a> to skip past the charts to the downloadable data</p>
 			</div>
 			
 			<div class="row">
-				<div class="col-md">
-					<img src="images/tmp/aggregate-count-line.jpg" class="img-thumbnail" />
+				<div class="col-md-6">
+					<img src="images/tmp/aggregate-count-line-large.jpg" class="img-thumbnail" />
 
 					
 				</div>
-				<div class="col-md">
-					<img src="images/tmp/grouped-bar-chart.jpg" class="img-thumbnail" />
+				<div class="col-md-6">
+					<h3>Line Chart!</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 				</div>
-				<div class="col-md">
-					<img src="images/tmp/pie-chart.jpg" class="img-thumbnail" />
+				<hr /> 
+				<div class="col-md-6">
+					<img src="images/tmp/grouped-bar-chart-large.jpg" class="img-thumbnail" />
 				</div>
-				
+				<div class="col-md-6">
+					<h3>Bar chart!</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
+				<hr /> 
+				<div class="col-md-6">
+					<img src="images/tmp/pie-chart-large.jpg" class="img-thumbnail" />
+				</div>
+				<div class="col-md-6">
+					<h3>Pie chart!</h3>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				</div>
 			</div>
 					
+			<hr />
 			
-			<div>
+			<div id="downloads">
 				<h3>Aggregate Data - Separated by Scan</h3>
 				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 				<p>You can download the most recent CSV file of all the aggregate data <a href="https://storage.googleapis.com/451-response-stats/aggregate.csv">here</a>.</p>
