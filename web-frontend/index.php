@@ -75,10 +75,21 @@ function parse451count($bucket, &$timestamp, &$count) {
 $aggregateTimestamp = array();
 $aggregateCount = array();
 parse451count($bucket, $aggregateTimestamp, $aggregateCount);
-$width = 600; $height = 600;
 
+
+
+
+$width = 600; $height = 600;
+// Create a new timer instance
+$timer = new JpgTimer();
+ 
+// Start the timer
+$timer->Push();
 // Create a graph instance
 $graph = new Graph($width,$height);
+
+// Make the bottom margin large enough to hold the timer value
+$graph->SetMargin(50,20,20,100);
 
 // Specify what scale we want to use,
 // int = integer scale for the X-axis
@@ -100,7 +111,9 @@ $lineplot=new LinePlot($aggregateCount);
 $lineplot->SetFillColor('orange@0.5');
 // Add the plot to the graph
 $graph->Add($lineplot);
-
+// Add the timing data to the graph
+$graph->footer->right->Set('Graph generated in (ms): ');
+$graph->footer->SetTimer($timer);
 // Save the graph
 $graph->Stroke('images/tmp/aggregate-count-line.jpg');
 ?>
