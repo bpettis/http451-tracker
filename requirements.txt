@@ -5,7 +5,5 @@
 ###
 
 censys
-
-# These are almost certainly installed by default, but I'm noting them here since they are used...
-json
-time
+google-cloud-storage
+google-cloud-pubsub
