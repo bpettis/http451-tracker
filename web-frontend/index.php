@@ -34,6 +34,7 @@
 require_once ('jpgraph/jpgraph.php');
 require_once ('jpgraph/jpgraph_line.php');
 require_once ('jpgraph/jpgraph_bar.php');
+require_once ('jpgraph/jpgraph_pie.php');
 
 # Size for all graphs:
 $width = 600; $height = 600;
@@ -121,6 +122,55 @@ function parseMultipleCodes($bucket, &$timestamp, &$count403, &$count404, &$coun
 		}
 
 
+	}
+}
+
+# Read data from some codes to be used in the pie chart
+function parsePie($bucket, &$pieScanTime, &$pieData){
+	$object = $bucket->object('aggregate.csv');
+	$contents = $object->downloadAsString();
+	$contents = str_replace(PHP_EOL, ";", $contents);
+	$rows = explode(";", $contents);
+	#Next we reverse the array, because we only care about the most recent row (the most recent scan)
+	$row = array_reverse($rows);
+	# We grab the 1st item in the array (and not the zeroth) because there is a blank line at the end of the file
+	$cells = explode(',', $row[1]);
+	foreach ($cells as $i => $cell){
+		# The aggregate.csv file has data for *all* http codes, and we only want the 451s, which are in the 33rd column
+		if ($i == 33) {
+			array_push($pieData, $cell);
+		# The data for 404 codes is in the 16th column
+		} elseif ($i == 16) {
+			array_push($pieData, $cell);
+		# THe data for 403 codes is in the 15th column
+		} elseif ($i == 15) {
+			array_push($pieData, $cell);
+		# Data for the 418 codes is in the 25th column
+		} elseif ($i == 25){
+			array_push($pieData, $cell);
+		# Data for the 500 codes is in the 37th column
+		} elseif ($i == 37) {
+			array_push($pieData, $cell);
+		#Data for the 502 codes is in the 39th column
+		} elseif ($i == 39) {
+			array_push($pieData, $cell);
+		#Data for 200 codes is in the 2nd column
+		} elseif ($i == 2) {
+			array_push($pieData, $cell);
+		# Data for 301 codes is in the 7th column
+		} elseif ($i == 7) {
+			array_push($pieData, $cell);
+		# Data for 307 codes is in the 10th column
+		} elseif ($i == 10) {
+			array_push($pieData, $cell);
+		# The first (0th) column has the dates, so we want to handle it differently
+		} elseif ($i == 0) {
+			$dateSplit = explode("_", $cell);
+			$pieScanTime = $dateSplit[0];
+		# Just skip everything else in the row
+		} else {
+			continue;
+		}
 	}
 }
 
@@ -239,6 +289,45 @@ $graph->footer->right->Set('Graph generated in (ms): ');
 $graph->footer->SetTimer($timer);
 $graph->Stroke('images/tmp/grouped-bar-chart.jpg');
 # END multiple-code grouped bar graph
+
+# START generate the pie-chart
+
+$pieData = array();
+$pieScanTime = 'unknown time';
+
+parsePie($bucket, $pieScanTime, $pieData);
+// Create a new timer instance
+$timer = new JpgTimer();
+ 
+// Start the timer
+$timer->Push();
+$graph = new PieGraph($width,$height);
+$graph->title->Set("Selected Codes from Last Scan (" . $pieScanTime . ")");
+ 
+$p1 = new PiePlot($pieData);
+
+
+
+$legend = array("200","301","307","403","404", "418", "451", "500", "502");
+$labels = array("200 - (%.0f)",
+                "301 - (%.0f)","307 - (%.0f)",
+                "403 - (%.0f)","404 - (%.0f)",
+                "418 - (%.0f)","451 - (%.0f)",
+                "500 - (%.0f)","502 - (%.0f)",
+                );
+
+$p1->SetLabels($labels);
+$p1->SetLabelPos(1);
+$p1->SetLegends($legend);
+$p1->SetLabelType(PIE_VALUE_ABS);
+$p1->SetGuideLines( true , false );
+$graph->Add($p1);
+$p1->SetCenter(0.4, 0.45);
+// Add the timing data to the graph
+$graph->footer->right->Set('Graph generated in (ms): ');
+$graph->footer->SetTimer($timer);
+$graph->Stroke('images/tmp/pie-chart.jpg');
+# END pie chart
 ?>
 	</head>
 	
@@ -280,7 +369,7 @@ $graph->Stroke('images/tmp/grouped-bar-chart.jpg');
 					<img src="images/tmp/grouped-bar-chart.jpg" class="img-thumbnail" />
 				</div>
 				<div class="col-md">
-					<img src="images/placeholder.png" class="img-thumbnail" />
+					<img src="images/tmp/pie-chart.jpg" class="img-thumbnail" />
 				</div>
 				
 			</div>
