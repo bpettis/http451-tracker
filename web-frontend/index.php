@@ -179,6 +179,7 @@ $aggregateTimestamp = array();
 $aggregateCount = array();
 parse451count($bucket, $aggregateTimestamp, $aggregateCount);
 
+@unlink('images/tmp/aggregate-count-line.jpg');
 
 
 // Create a new timer instance
@@ -224,7 +225,7 @@ $graph->Stroke('images/tmp/aggregate-count-line.jpg');
 #################
 
 # START multiple-code grouped bar graph
-
+@unlink('images/tmp/grouped-bar-chart.jpg');
 $groupedBarTimestamp = array();
 $groupedBar403 = array();
 $groupedBar404 = array();
@@ -291,7 +292,7 @@ $graph->Stroke('images/tmp/grouped-bar-chart.jpg');
 # END multiple-code grouped bar graph
 
 # START generate the pie-chart
-
+@unlink('images/tmp/pie-chart.jpg');
 $pieData = array();
 $pieScanTime = 'unknown time';
 
