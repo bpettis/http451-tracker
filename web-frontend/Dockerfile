@@ -57,3 +57,4 @@ RUN docker-php-ext-install gd
 
 # Set permissions of the temp images directory
 # RUN chmod 777 /var/www/html/images/tmp/aggregate-count-line-large.jpg && chmod 777 /var/www/html/images/tmp/aggregate-count-line.jpg && chmod 777 /var/www/html/images/tmp/grouped-bar-chart-large.jpg && chmod 777 /var/www/html/images/tmp/grouped-bar-chart.jpg && chmod 777 /var/www/html/images/tmp/pie-chart-large.jpg && chmod 777 /var/www/html/images/tmp/pie-chart.jpg
+RUN chmod -R 777 /var/www/html/images/tmp
