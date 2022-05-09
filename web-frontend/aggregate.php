@@ -15,6 +15,7 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
 		
+		<?php include('shared/analytics.php'); ?>
 <?php
 
 	# Includes the autoloader for libraries installed with composer

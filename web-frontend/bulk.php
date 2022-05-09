@@ -14,6 +14,8 @@
 		<link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
+        
+        <?php include('shared/analytics.php'); ?>
 		
 <?php
 
