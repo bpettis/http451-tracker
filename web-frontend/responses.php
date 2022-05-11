@@ -83,7 +83,7 @@
 					# We have to truncate the name with substr(), but then add back in a prefix because HTML ID names break when they start with an integer
 					$date_truncated = 'responses-' . substr($date, 10);
 				?>
-					<div class="accordion-item">
+				<div class="accordion-item">
 						<h2 class="accordion-header" id="<?php echo $date_truncated; ?>-heading">
 							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $date_truncated; ?>" aria-expanded="true" aria-controls="<?php echo $date_truncated; ?>">
 							<?php echo substr($date_truncated, 10); ?>
@@ -105,10 +105,11 @@
 						</ul>
 						<a href="#top-<?php echo $date_truncated; ?>" id="bottom-<?php echo $date_truncated; ?>">Jump to Top of Section</a> <br />
 					</div>
+				</div>
 				<?php
 				}
 				?>
-				</div>
+				
 			
 		</main>
 		
