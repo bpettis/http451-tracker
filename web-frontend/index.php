@@ -14,6 +14,9 @@
 		<link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
+        
+        <!-- Lightbox CSS -->
+		<link href="css/lightbox.css" rel="stylesheet" />
 		
 <?php
 
@@ -372,15 +375,15 @@ $graph->Stroke('images/tmp/pie-chart.jpg');
 			
 			<div class="row">
 				<div class="col-md">
-					<img src="images/tmp/aggregate-count-line.jpg" class="img-thumbnail" />
+					<a href="images/tmp/aggregate-count-line.jpg" data-lightbox="charts" data-title="Count of HTTP 451 Responses"><img src="images/tmp/aggregate-count-line.jpg"  class="img-thumbnail" /></a>
 
 					
 				</div>
 				<div class="col-md">
-					<img src="images/tmp/grouped-bar-chart.jpg" class="img-thumbnail" />
+					<a href="images/tmp/grouped-bar-chart.jpg" data-lightbox="charts" data-title="Proportion of Selected HTTP Error Codes"><img src="images/tmp/grouped-bar-chart.jpg" class="img-thumbnail" /></a>
 				</div>
 				<div class="col-md">
-					<img src="images/tmp/pie-chart.jpg" class="img-thumbnail" />
+					<a href="images/tmp/pie-chart.jpg" data-lightbox="charts" data-title="Selected Codes from Most Recent Scan"><img src="images/tmp/pie-chart.jpg" class="img-thumbnail" /></a>
 				</div>
 				
 			</div>

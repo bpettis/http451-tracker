@@ -15,6 +15,8 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
 		
+		<!-- Lightbox CSS -->
+		<link href="css/lightbox.css" rel="stylesheet" />
 
 	</head>
 	
