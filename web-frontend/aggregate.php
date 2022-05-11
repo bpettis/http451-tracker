@@ -26,6 +26,9 @@
 	# Set up storage client and specify a bucket
 	$storage = new StorageClient();
 	$bucket = $storage->bucket('451-response-stats');
+	
+	# Set the timezone for graph timestamps
+	date_default_timezone_set('America/Chicago');
 ?>
 
 <?php
@@ -214,7 +217,7 @@ $lineplot->SetFillColor('orange@0.5');
 // Add the plot to the graph
 $graph->Add($lineplot);
 // Add the timing data to the graph
-$graph->footer->right->Set('Graph generated in (ms): ');
+$graph->footer->right->Set('Graph generated at ' . date('Y-m-d H:i:s') . ' in (ms): ');
 $graph->footer->SetTimer($timer);
 // Save the graph
 $graph->Stroke('images/tmp/aggregate-count-line-large.jpg');
@@ -285,7 +288,7 @@ $graph->yaxis->title->Set("Count of Hosts");
 $graph->legend->SetPos(0.5,0.98,'center','bottom');
 
 // Add the timing data to the graph
-$graph->footer->right->Set('Graph generated in (ms): ');
+$graph->footer->right->Set('Graph generated at ' . date('Y-m-d H:i:s') . ' in (ms): ');
 $graph->footer->SetTimer($timer);
 $graph->Stroke('images/tmp/grouped-bar-chart-large.jpg');
 # END multiple-code grouped bar graph
@@ -324,7 +327,7 @@ $p1->SetGuideLines( true , false );
 $graph->Add($p1);
 $p1->SetCenter(0.4, 0.45);
 // Add the timing data to the graph
-$graph->footer->right->Set('Graph generated in (ms): ');
+$graph->footer->right->Set('Graph generated at ' . date('Y-m-d H:i:s') . ' in (ms): ');
 $graph->footer->SetTimer($timer);
 $graph->Stroke('images/tmp/pie-chart-large.jpg');
 # END pie chart
