@@ -356,7 +356,8 @@ $graph->Stroke('images/tmp/pie-chart-large.jpg');
 			</header>
 			
 			<div class="clearfix">
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				<p>	The 451 response code has been a formal part of the HTTP standard for several years, but my parsing of the Censys scan dataset indicates that it is yet to have been widely implemented. There are only a few tens of thousands of hosts returning a 451 code, a miniscule proportion of the hundreds of millions of hosts on the public Internet. This paucity is likely an indication that the restriction of online content is not merely the result of government action, but may be through the actions of private corporations, which is less likely to be reflected in the 451 code. This underscores the utility of analyzing the Web across multiple layers of the stack, rather than homing in on a single textual layer. </p>
+				<p>These charts are dynamically generated each time the page loads, and as such will contain the most recently available information. If you'd like to save a current chart, please Right Click and "Save As" onto your own computer. Alternatively, you can download a <a href="https://storage.googleapis.com/451-response-stats/aggregate.csv">CSV file</a> that contains all of the aggregate data to create your own (prettier) charts.</p>
 				<hr />
 				<p>Click <a href="#downloads">here</a> to skip past the charts to the downloadable data</p>
 			</div>
@@ -368,24 +369,26 @@ $graph->Stroke('images/tmp/pie-chart-large.jpg');
 					
 				</div>
 				<div class="col-md-6">
-					<h3>Line Chart!</h3>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+					<h3>Count of HTTP 451 Responses</h3>
+					<p>This chart shows the total number of HTTP 451 responses that were present during the last <a href="aggregate.php">aggregate query</a>. This chart offers a snapshot of whether the total amount of HTTP 451 codes "in the wild" is experience any significant increases or decreases. Note that the Y-axis does <em>not</em> start at zero, and that the dynamic scale of the graph is such that it may only encompass a range of a few hundred. Therefore, the chart may tend to over-represent the overall size of any fluctuations in the count of HTTP 451 responses.</p>
 				</div>
 				<hr /> 
 				<div class="col-md-6">
 					<img src="images/tmp/grouped-bar-chart-large.jpg" class="img-thumbnail" />
 				</div>
 				<div class="col-md-6">
-					<h3>Bar chart!</h3>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+					<h3>Proportion of Selected HTTP Error Codes</h3>
+					<p>Despite the HTTP 451 standard having been adopted six years ago, it has yet to be implemented at large scale. An optimistic reading of this may be that there is actually very little legal action requiring website operators to withhold content from certain reasons. The pessimistic view is that such restrictions are still taking place, but in ways that are not as readily apparent. For example, an Internet Service Provider may silently intercept requests for a certain site and return a “404 – Not Found” or “403 – Forbidden” code before the request even reaches the server. This may also mean that in cases of geoblocking, a server is still returning a 200 - OK response. Instead of a 451, the response contains a message about unavailable content rather than the content the user was seeking out, which is frequently the case when a video streaming platform restricts its content to certain regions of the world.</p>
+					<p>Interestingly, there are generally significantly more HTTP 418 codes than HTTP 451. The 418 code was introduced as part of an <a href="https://datatracker.ietf.org/doc/html/rfc2324">April Fool's RFC</a> and describes the "HyperText Coffee Pot Control Protocol." The fact that this joke HTTP code is more widespread than HTTP 451, an actual approved standard, is further sign of how unused the 451 code really is.</p>
 				</div>
 				<hr /> 
 				<div class="col-md-6">
 					<img src="images/tmp/pie-chart-large.jpg" class="img-thumbnail" />
 				</div>
 				<div class="col-md-6">
-					<h3>Pie chart!</h3>
-					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+					<h3>Proportions of Selected HTTP Response Codes</h3>
+					<p>Unsurprisingly, most responses are “200 – OK,” indicating that most public-facing HTTP servers are successfully serving content. The large number of 301 and 307 codes is also unsurprising, as these redirect codes are often used when a website operator redirects plain HTTP requests to use the more secure HTTPS version of the standard. Given the short timespan of this data and the wide fluctuation in accessible Web servers, the precise values of each code are not significant. However, what is notable is that the number of HTTP 451 codes is a whole order of magnitude less than other codes. While there are tens or hundreds of millions of HTTP servers returning 200, 301, 307, 403, 404, and 500, there are mere tens of thousands of 451 responses.</p>
+					<p>Interestingly, there are generally significantly more HTTP 418 codes than HTTP 451. The 418 code was introduced as part of an <a href="https://datatracker.ietf.org/doc/html/rfc2324">April Fool's RFC</a> and describes the "HyperText Coffee Pot Control Protocol." The fact that this joke HTTP code is more widespread than HTTP 451, an actual approved standard, is further sign of how unused the 451 code really is.</p>
 				</div>
 			</div>
 					
@@ -393,7 +396,7 @@ $graph->Stroke('images/tmp/pie-chart-large.jpg');
 			
 			<div id="downloads">
 				<h3>Aggregate Data - Separated by Scan</h3>
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				<p>Here you can view the results of the Censys aggregate query from each time the scripts were ran. Each individual JSON file will contain a breakdown of the number of responses for each HTTP response code. Or, you can view the aggregate table where each row is a different time the scripts ran. This is a very large and poorly formatted HTML table, and will likely not display in a very pretty fashion in most browsers.</p>
 				<p>You can download the most recent CSV file of all the aggregate data <a href="https://storage.googleapis.com/451-response-stats/aggregate.csv">here</a>.</p>
 				<div class="accordion" id="aggregate-data-accordion">
 					<div class="accordion-item">

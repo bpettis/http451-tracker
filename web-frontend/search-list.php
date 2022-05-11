@@ -51,13 +51,20 @@
 			</header>
 			
 			<div class="clearfix">
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				<p>The Censys <a href="aggregate.php">aggregate</a> query returns descriptive statistics on the total number of HTTP 451 responses alongside all other HTTP response codes. That query is useful for determining how many responses in general are being returned. However, my interest is also in the specific content that is actually returned to the user's browser (if any content is returned at all). To that end, I needed to query for more specific information from each host returning a HTTP 451 code.</p>
+				<p>To accomplish this, one of the scripts writes a text file with a list of IP addresses for the next script to query bulk information from. These IP addresses represent the hosts that meet 2 criteria:
+				<ol>
+					<li>Returning an HTTP response code of 451</li>
+					<li>Have <em>something</em> in the response body</li>
+				</ol>
+				On its own, this list doesn't really do much. It is primarily just the input data that the <a href="bulk.php">bulk query</a> uses to retrieve the full HTTP response header and body from each host. The results of that bulk query are then parsed to provide just the <a href="responses.php">HTTP responses</a>. However, in the interests of open access scholarship I am providing these lists that are used as an interim data retrieval step for potential use in future research projects.
+				</p>
 				<hr />
 			</div>
 								
 			<section>
 				<h3>IP Lists</h3>
-				<p>These text files contain all of the hosts that returned an HTTP response code of 451 to the Censys scanners</p>
+				<p>These text files contain all of the hosts that returned an HTTP response code of 451 to the Censys scanners AND contain something in their response body. The specific Censys search query used is: <code>services.http.response.status_code=451 AND NOT services.http.response.body_size=0</code></p>
 				<ul>
 				<?php
 				$directoryPrefix = 'ip-list/search';
