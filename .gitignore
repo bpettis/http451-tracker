@@ -16,3 +16,5 @@ composer.lock
 .gcloudignore
 
 output/
+
+web-frontend/images/tmp/
