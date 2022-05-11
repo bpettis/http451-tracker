@@ -15,7 +15,10 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
         
-        <?php include('shared/analytics.php'); ?>
+<?php include('shared/analytics.php'); ?>
+
+        <!-- Lightbox CSS -->
+		<link href="css/lightbox.css" rel="stylesheet" />
 		
 
 	</head>

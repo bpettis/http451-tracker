@@ -17,6 +17,8 @@
         
         <?php include('shared/analytics.php'); ?>
 		
+		<!-- Lightbox CSS -->
+		<link href="css/lightbox.css" rel="stylesheet" />
 <?php
 
 	# Includes the autoloader for libraries installed with composer
@@ -53,7 +55,7 @@
 			</header>
 			
 			<div class="clearfix">
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				<p>After using the <a href="search-list.php">search query</a> to compile a list of hosts returning a HTTP 451 code <em>AND</em> have content in the response body, I used the Censys Bulk Query API endpoint to retrieve full information about each host from the most recently available Censys scan. I then parse this data to retrieve the <a href="responses.php">HTTP responses</a> from each host. However, there is still a large amount of data that Censys includes in the bulk response. Though I am not currently using this data, it is being collected as part of my processing scripts and in the interest of supporting future research projects I am providing copies of that search result here.</p>
 				<hr />
 			</div>
 								

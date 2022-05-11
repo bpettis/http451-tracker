@@ -15,7 +15,12 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="css/styles.css" rel="stylesheet" />
         
+
         <?php include('shared/analytics.php'); ?>
+
+        <!-- Lightbox CSS -->
+		<link href="css/lightbox.css" rel="stylesheet" />
+
 		
 <?php
 
@@ -53,12 +58,14 @@
 			</header>
 			
 			<div class="clearfix">
-				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+				<p>The HTTP 451 standard states that one “should” provide information about the entity performing the block, as well as an explanation of the block reason for the user to understand. The HTTP responses that I examined take this “should” directive very loosely and provide very little information about the reasons that the content on the page is not available. There were no examples of a server naming the blocking entity within the HTTP response header, leaving it unclear whether it was the website operator that received the legal request or if it was an Internet Service Provider or other intermediary.</p>
+				</p>While there were examples of the HTTP response body containing more information, there is still very little meaning explanation given to the user. Many response bodies were a single line of text containing “451,” “not authorized,” or simply “error.” None of these responses adequately explain to a user the reason for content being inaccessible, and for a user who is not familiar with HTTP response codes, they are unlikely to even associate such a message with legal content restrictions. In other examples, such as Figure 3, there was a full Web page delivered with a slightly longer message, but still with little clarity or explanation provided for the user.</p>
+				<p>In the handful of examples of actual HTTP 451 responses that I have reviewed, it is apparent that there is often very little explanation of the legal reasoning behind content blocking. This is a reminder that while geoblocking is a common feature of the modern Web, there is a tendency to downplay its role and significance. The use of an HTTP 451 response code tends to obfuscates whose interests are being served when Web content is restricted. The code suggests that when content is inaccessible it is a failure of technology, and not the result of corporate interests and government power enacted within code. And while some of the above examples contain cryptic messages and unhelpful explanations, I suppose it is at very least <em>some</em> acknowledgement that content is being withheld for legal reasons, rather than providing a more inaccurate error such as “404 - Not Found” or terminating the connection to the server entirely. The HTTP 451 response code along with the response body that is returned to the user represents the ability of governments to exert their power in online spaces. The government action is seen not just in the page content, but reflected in the lower levels of code as well</p>
 				<hr />
 			</div>
 								
 			<section>
-				<h3>HTTP Responses</h3>
+				<h3>HTTP Responses - Sorted by Scan Date</h3>
 				<p>The below list includes a generated version of the HTML page that a user may have seen when receiving an HTTP 451 error from a given host. The directory prefix indicates the date and time that the data was parses, and the file name indicates the IP address. The HTML file includes the entirety of the HTTP response body (which in most cases is HTML, but may have been raw text or JSON). The TXT file contains the full HTTP response, including the header.</p>
 				<?php
 				$directoryPrefix = 'responses/';
@@ -71,11 +78,9 @@
 				?>
 				
 				
-			<hr />
 			</section>
 			
 			<div>
-				<h3>HTTP Responses - Sorted by Scan Date</h3>
 				<div class="accordion" id="responses-accordian">
 				<?php
 				
@@ -85,7 +90,7 @@
 					# We have to truncate the name with substr(), but then add back in a prefix because HTML ID names break when they start with an integer
 					$date_truncated = 'responses-' . substr($date, 10);
 				?>
-					<div class="accordion-item">
+				<div class="accordion-item">
 						<h2 class="accordion-header" id="<?php echo $date_truncated; ?>-heading">
 							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#<?php echo $date_truncated; ?>" aria-expanded="true" aria-controls="<?php echo $date_truncated; ?>">
 							<?php echo substr($date_truncated, 10); ?>
@@ -107,10 +112,11 @@
 						</ul>
 						<a href="#top-<?php echo $date_truncated; ?>" id="bottom-<?php echo $date_truncated; ?>">Jump to Top of Section</a> <br />
 					</div>
+				</div>
 				<?php
 				}
 				?>
-				</div>
+				
 			
 		</main>
 		
