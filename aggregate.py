@@ -116,7 +116,7 @@ def aggregate():
 	report = c.v2.hosts.aggregate(
 	    "service.service_name: HTTP",
 	    "services.http.response.status_code",
-	    num_buckets=50,
+	    num_buckets=250,
 	    virtual_hosts="INCLUDE"
 	)
 	
@@ -151,7 +151,8 @@ def aggregate():
 			code_count = list(filter(lambda item: item['key'] == str(code), data['buckets']))
 			code_count = code_count[0]['count']
 		except:
-			code_count = ''
+	# If somehow we don't have a value for the code, enter a zero so that the csv has *some* value - and jpGraph can handle it.
+			code_count = '0'
 		row.append(code_count)
 	
 	# Get the aggregate.csv file from the cloud
@@ -166,11 +167,12 @@ def aggregate():
 	upload_file(bucket_name, '/tmp/aggregate-temp.csv', 'aggregate.csv')
 	
 	# Do some cleanup and delete our temp file
-	if os.path.exists("aggregate-temp.csv"):
-	  os.remove("aggregate-temp.csv")
+	if os.path.exists("/tmp/aggregate-temp.csv"):
+	  os.remove("/tmp/aggregate-temp.csv")
 	else:
-	  print("The file does not exist")
+	  print("The file does not exist to be deleted")
 
+	# Publish a Pub/Sub message to start the next script in the pipeline:
 	message = publisher.publish(topic_path, b'Aggregate finished - Start Search!')  
 	  
 	print('Done!')
