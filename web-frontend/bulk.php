@@ -28,7 +28,9 @@
 	use Google\Cloud\Storage\StorageClient;
 	
 	# Set up storage client and specify a bucket
-	$storage = new StorageClient();
+	$storage = new StorageClient([
+		'keyFile' => json_decode(file_get_contents('http-451-tracker-creds.json'), true)
+	]);
 	$bucket = $storage->bucket('451-response-stats');
 ?>
 	</head>
