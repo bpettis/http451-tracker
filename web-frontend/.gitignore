@@ -2,3 +2,4 @@ composer-setup.php
 composer.phar
 
 .DS_Store
+http-451-tracker-creds.json
