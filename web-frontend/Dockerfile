@@ -55,6 +55,8 @@ RUN apt-get update && apt-get install -y \
 RUN docker-php-ext-configure gd --with-jpeg --with-freetype
 RUN docker-php-ext-install gd
 
+# Create the images directory and then
 # Set permissions of the temp images directory
 # RUN chmod 777 /var/www/html/images/tmp/aggregate-count-line-large.jpg && chmod 777 /var/www/html/images/tmp/aggregate-count-line.jpg && chmod 777 /var/www/html/images/tmp/grouped-bar-chart-large.jpg && chmod 777 /var/www/html/images/tmp/grouped-bar-chart.jpg && chmod 777 /var/www/html/images/tmp/pie-chart-large.jpg && chmod 777 /var/www/html/images/tmp/pie-chart.jpg
+RUN mkdir -p /var/www/html/images/tmp
 RUN chmod -R 777 /var/www/html/images/tmp
