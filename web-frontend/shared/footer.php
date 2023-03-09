@@ -1,4 +1,4 @@
-<footer class="mt-auto">
+<footer class="mt-5">
 	Host scan data is Copyright &copy; <?php echo date("Y"); ?> <a href="https://censys.io">Censys</a> <br />
 	Website design and data analysis <span class="copy-left">&copy;</span> 2022 - <?php echo date("Y"); ?> Ben Pettis - Some Rights Reserved <br />
 	Enjoy this? <a href="https://ko-fi.com/bpettis">Buy me a Ko-Fi!</a> <br />
