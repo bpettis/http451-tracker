@@ -7,3 +7,8 @@
 
   gtag('config', 'G-686V0CZTBK');
 </script>
+
+<?php
+# Disable warnings/errors from appearing
+ini_set('display_errors', '0'); 
+?>
